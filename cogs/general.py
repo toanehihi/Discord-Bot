@@ -9,6 +9,7 @@ Version: 6.2.0
 import platform
 import random
 
+import os
 import aiohttp
 import discord
 from discord import app_commands
@@ -121,7 +122,7 @@ class General(commands.Cog, name="general"):
             color=0xBEBEFE,
         )
         embed.set_author(name="Bot Information")
-        embed.add_field(name="Owner:", value="Krypton#7331", inline=True)
+        embed.add_field(name="Owner:", value="𝔹𝕖𝕚𝕤𝕖𝕟𝕙𝕖𝕣𝕘", inline=True)
         embed.add_field(
             name="Python Version:", value=f"{platform.python_version()}", inline=True
         )
@@ -267,6 +268,7 @@ class General(commands.Cog, name="general"):
         name="bitcoin",
         description="Get the current price of bitcoin.",
     )
+    @app_commands.guilds(discord.Object(id=os.getenv("GUILD_ID")))
     async def bitcoin(self, context: Context) -> None:
         """
         Get the current price of bitcoin.

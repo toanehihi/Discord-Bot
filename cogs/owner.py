@@ -1,11 +1,3 @@
-"""
-Copyright © Krypton 2019-Present - https://github.com/kkrypt0nn (https://krypton.ninja)
-Description:
-🐍 A simple template to start to code your own and personalized Discord bot in Python
-
-Version: 6.2.0
-"""
-
 import discord
 from discord import app_commands
 from discord.ext import commands
@@ -18,7 +10,7 @@ class Owner(commands.Cog, name="owner"):
 
     @commands.command(
         name="sync",
-        description="Synchonizes the slash commands.",
+        description="Synchronizes the slash commands.",
     )
     @app_commands.describe(scope="The scope of the sync. Can be `global` or `guild`")
     @commands.is_owner()
@@ -54,7 +46,7 @@ class Owner(commands.Cog, name="owner"):
 
     @commands.command(
         name="unsync",
-        description="Unsynchonizes the slash commands.",
+        description="Unsynchronizes the slash commands.",
     )
     @app_commands.describe(
         scope="The scope of the sync. Can be `global`, `current_guild` or `guild`"

@@ -13,13 +13,10 @@ import platform
 import random
 import sys
 
-import aiosqlite
 import discord
 from discord.ext import commands, tasks
 from discord.ext.commands import Context
 from dotenv import load_dotenv
-
-from database import DatabaseManager
 
 if not os.path.isfile(f"{os.path.realpath(os.path.dirname(__file__))}/config.json"):
     sys.exit("'config.json' not found! Please add it and try again.")
@@ -60,7 +57,7 @@ intents.message_content = True
 intents.presences = True
 """
 
-intents = discord.Intents.default()
+intents = discord.Intents.all()
 
 """
 Uncomment this if you want to use prefix (normal) commands.
@@ -139,17 +136,6 @@ class DiscordBot(commands.Bot):
         """
         self.logger = logger
         self.config = config
-        self.database = None
-
-    async def init_db(self) -> None:
-        async with aiosqlite.connect(
-            f"{os.path.realpath(os.path.dirname(__file__))}/database/database.db"
-        ) as db:
-            with open(
-                f"{os.path.realpath(os.path.dirname(__file__))}/database/schema.sql"
-            ) as file:
-                await db.executescript(file.read())
-            await db.commit()
 
     async def load_cogs(self) -> None:
         """
@@ -193,14 +179,9 @@ class DiscordBot(commands.Bot):
             f"Running on: {platform.system()} {platform.release()} ({os.name})"
         )
         self.logger.info("-------------------")
-        await self.init_db()
         await self.load_cogs()
         self.status_task.start()
-        self.database = DatabaseManager(
-            connection=await aiosqlite.connect(
-                f"{os.path.realpath(os.path.dirname(__file__))}/database/database.db"
-            )
-        )
+        
 
     async def on_message(self, message: discord.Message) -> None:
         """
