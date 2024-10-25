@@ -78,10 +78,10 @@ class Music(commands.Cog):
         query = " ".join(args)
         try:
             voiceChannel = ctx.author.voice.channel
-            if self.voiceChannel == None or not self.voiceChannel.is_connected():
-                self.voiceChannel = await voiceChannel.connect()
-            if self.voiceChannel != voiceChannel:
-                await self.voiceChannel.move_to(voiceChannel)
+            # if self.voiceChannel == None or not self.voiceChannel.is_connected():
+            #     self.voiceChannel = await voiceChannel.connect()
+            # if self.voiceChannel != voiceChannel:
+            #     await self.voiceChannel.move_to(voiceChannel)
         except:
             await ctx.send('You are not in a voice channel, pls join one')
             return
