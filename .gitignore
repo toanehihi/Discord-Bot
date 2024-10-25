@@ -3,3 +3,9 @@ __pycache__/
 
 # Log file
 discord.log
+
+#.env
+.env
+
+#config
+config.json
