@@ -27,4 +27,4 @@ wrapt
 yarl
 youtube-dl
 youtube-search-python
-
+fuzzywuzzy

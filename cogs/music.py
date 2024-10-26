@@ -4,8 +4,8 @@ import discord
 from discord.ext import commands
 from youtubesearchpython import VideosSearch
 from yt_dlp import YoutubeDL
-
-class Music(commands.Cog):
+import random
+class Music(commands.Cog,name="Music"):
 
     #init service
     def __init__(self,bot):
@@ -35,8 +35,6 @@ class Music(commands.Cog):
     async def play_next(self):
         if len(self.songQueue)>0:
             self.isPlaying = True
-            
-            #get fist song in queue
             m_url = self.songQueue[0][0]['source']
             
             #remove it
@@ -67,7 +65,7 @@ class Music(commands.Cog):
             loop = asyncio.get_event_loop()
             data = await loop.run_in_executor(None, lambda: self.ytdl.extract_info(m_url, download=False))
             song = data['url']
-            print(song)
+            print(data['url'],data['title'])
             self.voiceChannel.play(discord.FFmpegPCMAudio(song, executable= "ffmpeg", **self.FFMPEG_OPTIONS), after=lambda e: asyncio.run_coroutine_threadsafe(self.play_next(), self.bot.loop))
         else:
             self.isPlaying = False
@@ -78,10 +76,6 @@ class Music(commands.Cog):
         query = " ".join(args)
         try:
             voiceChannel = ctx.author.voice.channel
-            # if self.voiceChannel == None or not self.voiceChannel.is_connected():
-            #     self.voiceChannel = await voiceChannel.connect()
-            # if self.voiceChannel != voiceChannel:
-            #     await self.voiceChannel.move_to(voiceChannel)
         except:
             await ctx.send('You are not in a voice channel, pls join one')
             return
@@ -139,6 +133,7 @@ class Music(commands.Cog):
                 embed.description += f"**{i} - {song[0]['title']}**\n"
                 i+=1
             await ctx.send(embed=embed)
+        print(self.songQueue)
     @commands.command(name="leave",aliases=['disconnect','dc'],help="Leave the voice channel")
     async def leave(self,ctx):
         if self.voiceChannel != None:
@@ -169,5 +164,14 @@ class Music(commands.Cog):
                     await ctx.send('Index out of range')
             except:
                 await ctx.send('Invalid index')
-    
-
+    @commands.command(name="shuffle",help="Shuffle the queue")
+    async def shuffle(self,ctx):
+        if len(self.songQueue)>0:
+            random.shuffle(self.songQueue)
+            await ctx.send('Queue shuffled')
+            await self.queue(ctx)
+        else:
+            await ctx.send('No song in queue')
+            
+async def setup(bot) -> None:
+    await bot.add_cog(Music(bot))
