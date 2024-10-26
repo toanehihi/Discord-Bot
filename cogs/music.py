@@ -145,7 +145,7 @@ class Music(commands.Cog,name="Music"):
             await ctx.send('Disconnected')
         else:
             await ctx.send('Bot is not in a voice channel')
-    @commands.command(name="clear",help="Clear the queue")
+    @commands.command(name="clear_queue",help="Clear the queue")
     async def clear(self,ctx):
         self.songQueue = []
         await ctx.send('Queue cleared')
