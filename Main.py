@@ -205,5 +205,3 @@ if __name__ == "__main__":
     load_dotenv()
     bot = DiscordBot()
     bot.run(os.getenv("TOKEN"))
-
- 
