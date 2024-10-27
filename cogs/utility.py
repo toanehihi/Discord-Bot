@@ -162,18 +162,19 @@ class Utility(commands.Cog, name="utility"):
         :param context: The hybrid command context.
         :param query: The query to search on Wikipedia.
         """
-        url = "https://wikipedia-api1.p.rapidapi.com/get_summary"
-        querystring = {"q": query, "lang": "vi", "sentences": "3"}
+        url = "https://ai-chatbot.p.rapidapi.com/chat/free"
+        querystring = {"message":query, "uid": context.author}
 
         headers = {
             "x-rapidapi-key": "4e43b4c3bcmsh1827e6c7fea3df3p1ed847jsnf9e4737a2128",
-            "x-rapidapi-host": "wikipedia-api1.p.rapidapi.com"
+            "x-rapidapi-host": "ai-chatbot.p.rapidapi.com"
         }
         
         response = requests.get(url, headers=headers, params=querystring)
         if response.status_code == 200:
             json_response = response.json()
-            await context.send(json_response['data'])
+            if json_response["chatbot"]:
+                await context.send(json_response["chatbot"]["response"])
         else:
             await context.send(f"Lỗi khi tìm kiếm thông tin.")           
 
