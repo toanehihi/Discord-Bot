@@ -265,7 +265,7 @@ def setup(bot):
       else:
          await ctx.send('Không có công việc chưa hoàn thành trong tuần tới.')
 
-   @bot.command(name='clear')
+   @bot.command(name='clear_todo')
    async def clear_tasks(ctx):
       # Get user tasks reference
       tasks_ref = get_user_ref(ctx)
