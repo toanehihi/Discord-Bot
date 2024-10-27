@@ -28,3 +28,5 @@ yarl
 youtube-dl
 youtube-search-python
 fuzzywuzzy
+yt_dlp
+redis

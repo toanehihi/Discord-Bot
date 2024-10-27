@@ -1,10 +1,9 @@
-[2024-10-26 14:42:56] [INFO    ] discord_bot: Logged in as Amogus
-[2024-10-26 14:42:56] [INFO    ] discord_bot: discord.py API version: 2.4.0
-[2024-10-26 14:42:56] [INFO    ] discord_bot: Python version: 3.12.3
-[2024-10-26 14:42:56] [INFO    ] discord_bot: Running on: Linux 6.8.0-47-generic (posix)
-[2024-10-26 14:42:56] [INFO    ] discord_bot: -------------------
-[2024-10-26 14:42:56] [INFO    ] discord_bot: Loaded extension 'moderation'
-[2024-10-26 14:42:56] [INFO    ] discord_bot: Loaded extension 'owner'
-[2024-10-26 14:42:56] [INFO    ] discord_bot: Loaded extension 'utility'
-[2024-10-26 14:42:57] [ERROR   ] discord_bot: Failed to load extension music
-ExtensionFailed: Extension 'cogs.music' raised an error: CommandRegistrationError: The command clear is already an existing command or alias.
+[2024-10-27 17:54:16] [INFO    ] discord_bot: Logged in as Amogus
+[2024-10-27 17:54:16] [INFO    ] discord_bot: discord.py API version: 2.4.0
+[2024-10-27 17:54:16] [INFO    ] discord_bot: Python version: 3.12.3
+[2024-10-27 17:54:16] [INFO    ] discord_bot: Running on: Linux 6.8.0-47-generic (posix)
+[2024-10-27 17:54:16] [INFO    ] discord_bot: -------------------
+[2024-10-27 17:54:16] [INFO    ] discord_bot: Loaded extension 'music'
+[2024-10-27 17:54:31] [INFO    ] discord_bot: Executed play command in Dev (ID: 1279000072817868873) by toanehihi (ID: 1140939780255916082)
+[2024-10-27 17:54:53] [INFO    ] discord_bot: Executed skip command in Dev (ID: 1279000072817868873) by toanehihi (ID: 1140939780255916082)
+[2024-10-27 17:54:57] [INFO    ] discord_bot: Executed play command in Dev (ID: 1279000072817868873) by toanehihi (ID: 1140939780255916082)
