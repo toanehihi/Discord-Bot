@@ -1,0 +1,27 @@
+[
+    [
+        {
+            'source': 'https://www.youtube.com/watch?v=mLqL35YdcqE',
+            'title': 'Những Lời Hứa Bỏ Quên - Vũ. x Dear Jane (Lyric Video)'
+        },
+        <VoiceChannel id=1299205993892413583 name='ccc' rtc_region=None position=1 bitrate=64000 video_quality_mode=<VideoQualityMode.auto: 1> user_limit=0 category_id=1210879338594172970>
+    ],
+    [
+        {
+            'source': 'https://www.youtube.com/watch?v=e5Td3zrVdX4',
+            'title': 'Nếu Những Tiếc Nuối / Vũ. (Official MV) từ Album "Bảo Tàng Của Nuối Tiếc"'
+        },
+        <VoiceChannel id=1299205993892413583 name='ccc' rtc_region=None position=1 bitrate=64000 video_quality_mode=<VideoQualityMode.auto: 1> user_limit=0 category_id=1210879338594172970>
+    ],
+    [
+        {
+            'source': 'https://www.youtube.com/watch?v=j4o-_92kxcE',
+            'title': 'THE ENIGMA VI (FULL ALBUM)'
+        },
+        <VoiceChannel id=1210879338594172972 name='Chung' rtc_region=None position=0 bitrate=64000 video_quality_mode=<VideoQualityMode.auto: 1> user_limit=0 category_id=1210879338594172970>
+    ]
+]
+
+cache data data = await loop.run_in_executor(None, lambda: self.ytdl.extract_info(m_url, download=False)
+=>{'title','data'}
+remove after 6hour
