@@ -1,0 +1,33 @@
+============================== TODO HELP COMMAND ==============================
+                  *** Hãy thêm dấu "!" vào trước mỗi câu lệnh ***
+
+list                                      -----    hiển thị tất cả công việc
+
+list_w                                    -----    hiển thị các công việc cần làm trong tuần này
+
+list_nw                                   -----    hiển thị các công việc cần làm trong tuần sau
+
+clear                                     -----    xoá tất cả các công việc
+
+add [task_name] [exp_date]                -----    thêm công việc mới 
+
+edit [index_of_task] [new_task_name]      -----    sửa 1 công việc
+
+delete [index_of_task]                    -----    xoá 1 công việc
+
+complete [index_of_task] [status]         -----    đánh dấu 1 công việc đã hoàn thành
+Hint: 0 - Chưa hoàn thành, 
+      1 - Đã hoàn thành
+
+deadline [index_of_task] [exp_date]       -----    sửa deadline của 1 công việc
+
+Status:
+- Chưa hoàn thành [✗]
+- Đã hoàn thành   [✓]
+- Quá hạn         [O]
+
+⚠️Warning:
+-  Khi xoá hay đánh dấu hoàn thành cho 1 task, hãy chọn 
+   index của task được hiển thị bởi lệnh !list
+
+
