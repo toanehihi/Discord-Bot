@@ -1,12 +1,14 @@
+import random, asyncio, discord, json
+
 from ast import alias
-import asyncio
-import discord
 from discord.ext import commands
 from youtubesearchpython import VideosSearch
 from yt_dlp import YoutubeDL
-import random
-class Music(commands.Cog,name="Music"):
+from Database.cache import RedisCache
 
+
+class Music(commands.Cog,name="Music"):
+    
     #init service
     def __init__(self,bot):
         self.bot = bot
@@ -27,7 +29,7 @@ class Music(commands.Cog,name="Music"):
     #research on youtube
     def search(self,item):
         if item.startswith('https://'):
-            title = self.ytdl.extract_info(item,download=False)['title']
+            title = self.ytdl.extract_info(item, download = False)['title']
             return {'source':item,'title':title}
         search = VideosSearch(item,limit=1)
         return {'source':search.result()['result'][0]['link'],'title':search.result()['result'][0]['title']}
@@ -37,11 +39,22 @@ class Music(commands.Cog,name="Music"):
             self.isPlaying = True
             m_url = self.songQueue[0][0]['source']
             
-            #remove it
             self.songQueue.pop(0)
+            
+            #====================REDIS====================
+            cache = RedisCache()
+            if cache.get_song_url(m_url):
+                song = cache.get_song_url(m_url)
+                self.voiceChannel.play(discord.FFmpegPCMAudio(song,executable="ffmpeg",**self.FFMPEG_OPTIONS),after = lambda e: asyncio.run_coroutine_threadsafe(self.play_next(),self.bot.loop))
+                return
+            #============================================
+            
             loop = asyncio.get_event_loop()
-            data = await loop.run_in_executor(None,lambda: self.ytdl.extract_info(m_url,download=False)) #create new thread to get new song, non blocking main thread, only get infor
-            song = data['url'] #get url
+            data = await loop.run_in_executor(None,lambda: self.ytdl.extract_info(m_url, download = False)) #create new thread to get new song, non blocking main thread, only get infor
+            song = data['url'] 
+                
+            cache.set_song_url(m_url,song)
+                
             #pass in 1 callback to play next song
             self.voiceChannel.play(discord.FFmpegPCMAudio(song,executable="ffmpeg",**self.FFMPEG_OPTIONS),after = lambda e: asyncio.run_coroutine_threadsafe(self.play_next(),self.bot.loop))
         else:
@@ -62,10 +75,22 @@ class Music(commands.Cog,name="Music"):
                 await self.voiceChannel.move_to(self.songQueue[0][1])
                 
             self.songQueue.pop(0)
+            #====================REDIS====================
+            cache = RedisCache()
+            if cache.get_song_url(m_url):
+                song = cache.get_song_url(m_url)
+                self.voiceChannel.play(discord.FFmpegPCMAudio(song, executable="ffmpeg", **self.FFMPEG_OPTIONS), after=lambda e: asyncio.run_coroutine_threadsafe(self.play_next(), self.bot.loop))
+                return
+            #============================================
+            
             loop = asyncio.get_event_loop()
-            data = await loop.run_in_executor(None, lambda: self.ytdl.extract_info(m_url, download=False))
+            data = await loop.run_in_executor(None, lambda: self.ytdl.extract_info(m_url, download = False))
+
+            # with open('output.json','w',encoding="utf-8") as file:
+            #     json.dump(data, file, indent=4, ensure_ascii=False)
+                
             song = data['url']
-            print(data['url'],data['title'])
+            cache.set_song_url(data['webpage_url'],song)
             self.voiceChannel.play(discord.FFmpegPCMAudio(song, executable= "ffmpeg", **self.FFMPEG_OPTIONS), after=lambda e: asyncio.run_coroutine_threadsafe(self.play_next(), self.bot.loop))
         else:
             self.isPlaying = False
@@ -90,6 +115,7 @@ class Music(commands.Cog,name="Music"):
                     await ctx.send(f"**#{len(self.songQueue)+2} -'{song['title']}'** added to the queue")
                 else:
                     await ctx.send(f"**'{song['title']}'** added to the queue")   
+
                 self.songQueue.append([song,voiceChannel])
 
                 if self.isPlaying==False:
