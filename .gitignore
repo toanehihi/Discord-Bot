@@ -3,3 +3,7 @@
 
 # Log file
 discord.log
+
+# Virtual environment
+.venv/
+

@@ -1,9 +1,24 @@
-[2024-10-27 17:54:16] [INFO    ] discord_bot: Logged in as Amogus
-[2024-10-27 17:54:16] [INFO    ] discord_bot: discord.py API version: 2.4.0
-[2024-10-27 17:54:16] [INFO    ] discord_bot: Python version: 3.12.3
-[2024-10-27 17:54:16] [INFO    ] discord_bot: Running on: Linux 6.8.0-47-generic (posix)
-[2024-10-27 17:54:16] [INFO    ] discord_bot: -------------------
-[2024-10-27 17:54:16] [INFO    ] discord_bot: Loaded extension 'music'
-[2024-10-27 17:54:31] [INFO    ] discord_bot: Executed play command in Dev (ID: 1279000072817868873) by toanehihi (ID: 1140939780255916082)
-[2024-10-27 17:54:53] [INFO    ] discord_bot: Executed skip command in Dev (ID: 1279000072817868873) by toanehihi (ID: 1140939780255916082)
-[2024-10-27 17:54:57] [INFO    ] discord_bot: Executed play command in Dev (ID: 1279000072817868873) by toanehihi (ID: 1140939780255916082)
+[2024-10-28 10:43:28] [INFO    ] discord_bot: Logged in as Amogus
+[2024-10-28 10:43:28] [INFO    ] discord_bot: discord.py API version: 2.4.0
+[2024-10-28 10:43:28] [INFO    ] discord_bot: Python version: 3.12.3
+[2024-10-28 10:43:28] [INFO    ] discord_bot: Running on: Linux 6.8.0-47-generic (posix)
+[2024-10-28 10:43:28] [INFO    ] discord_bot: -------------------
+[2024-10-28 10:43:28] [INFO    ] discord_bot: Loaded extension 'moderation'
+[2024-10-28 10:43:29] [INFO    ] discord_bot: Loaded extension 'todo'
+[2024-10-28 10:43:29] [INFO    ] discord_bot: Loaded extension 'owner'
+[2024-10-28 10:43:29] [INFO    ] discord_bot: Loaded extension 'utility'
+[2024-10-28 10:43:29] [INFO    ] discord_bot: Loaded extension 'music'
+[2024-10-28 10:43:32] [INFO    ] discord_bot: Executed help command in Dev (ID: 1279000072817868873) by toanehihi (ID: 1140939780255916082)
+[2024-10-28 10:44:12] [INFO    ] discord_bot: Executed reload command in Local Storage (ID: 1210879338594172968) by toanehihi (ID: 1140939780255916082)
+[2024-10-28 10:50:16] [INFO    ] discord_bot: Executed help command in Dev (ID: 1279000072817868873) by lezh1n (ID: 858690480871178240)
+[2024-10-28 10:52:34] [WARNING ] discord_bot: lezh1n (ID: 858690480871178240) tried to execute an owner only command in the guild Dev (ID: 1279000072817868873), but the user is not an owner of the bot.
+[2024-10-28 10:52:48] [INFO    ] discord_bot: Executed help command in Dev (ID: 1279000072817868873) by lezh1n (ID: 858690480871178240)
+[2024-10-28 10:53:15] [INFO    ] discord_bot: Executed delete command in Dev (ID: 1279000072817868873) by lezh1n (ID: 858690480871178240)
+[2024-10-28 10:54:46] [INFO    ] discord_bot: Executed clear command in Dev (ID: 1279000072817868873) by toanehihi (ID: 1140939780255916082)
+[2024-10-28 10:55:15] [INFO    ] discord_bot: Executed clear command in Local Storage (ID: 1210879338594172968) by toanehihi (ID: 1140939780255916082)
+[2024-10-28 10:59:10] [INFO    ] discord_bot: Executed clear command in Local Storage (ID: 1210879338594172968) by toanehihi (ID: 1140939780255916082)
+[2024-10-28 10:59:28] [INFO    ] discord_bot: Executed clear command in Local Storage (ID: 1210879338594172968) by toanehihi (ID: 1140939780255916082)
+[2024-10-28 11:04:13] [INFO    ] discord_bot: Executed help command in Local Storage (ID: 1210879338594172968) by toanehihi (ID: 1140939780255916082)
+[2024-10-28 11:06:25] [INFO    ] discord_bot: Executed help command in Local Storage (ID: 1210879338594172968) by toanehihi (ID: 1140939780255916082)
+[2024-10-28 11:08:56] [INFO    ] discord_bot: Executed reload command in Local Storage (ID: 1210879338594172968) by toanehihi (ID: 1140939780255916082)
+[2024-10-28 11:09:00] [INFO    ] discord_bot: Executed help command in Local Storage (ID: 1210879338594172968) by toanehihi (ID: 1140939780255916082)
