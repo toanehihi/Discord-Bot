@@ -2,7 +2,7 @@ import json, logging, os, platform, random, sys ,discord
 from discord.ext import commands, tasks
 from discord.ext.commands import Context
 from dotenv import load_dotenv
-from features.todo.todo import setup as SetupTodoBot
+from cogs.todo import setup as SetupTodoBot
 
 #Check config file + load it
 if not os.path.isfile(f"{os.path.realpath(os.path.dirname(__file__))}/config.json"):
