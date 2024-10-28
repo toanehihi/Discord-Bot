@@ -96,7 +96,7 @@ class Music(commands.Cog,name="Music"):
             self.isPlaying = False
     
     
-    @commands.command(name="play",aliases=['p','playing'],help="Pick a song on Youtube to play")
+    @commands.command(name="play",aliases=['p','playing'],description="Nhập tên một bài hát hoặc url youtube của nó")
     async def play(self,ctx,*args):
         query = " ".join(args)
         try:
@@ -112,7 +112,7 @@ class Music(commands.Cog,name="Music"):
                 await ctx.send("Error, plz try again")
             else:
                 if self.isPlaying == True:
-                    await ctx.send(f"**#{len(self.songQueue)+2} -'{song['title']}'** added to the queue")
+                    await ctx.send(f"**#{len(self.songQueue)+2} -'{song['title']}'** dd")
                 else:
                     await ctx.send(f"**'{song['title']}'** added to the queue")   
 
@@ -121,7 +121,7 @@ class Music(commands.Cog,name="Music"):
                 if self.isPlaying==False:
                     await self.play_music(ctx)
         
-    @commands.command(name="pause",help="Pause the song")
+    @commands.command(name="pause",description="Tạm dừng")
     async def pause(self,ctx,*args):
         if self.isPlaying:
             self.voiceChannel.pause()
@@ -133,14 +133,14 @@ class Music(commands.Cog,name="Music"):
             self.isPlaying = True
             self.voiceChannel.resume()
             await ctx.send('Resumed')
-    @commands.command(name="resume",help="Resume the song")
+    @commands.command(name="resume",description="Tiếp tục")
     async def resume(self,ctx,*args):
         if self.isPaused:
             self.isPaused = False
             self.isPlaying = True
             self.voiceChannel.resume()
             await ctx.send('Resumed')
-    @commands.command(name="skip", aliases=["s"], help="Skips the current song being played")
+    @commands.command(name="skip", aliases=["s"], description="Bỏ qua bài hát hiện tại")
     async def skip(self,ctx):
         if self.isPlaying:
             self.voiceChannel.stop()
@@ -148,7 +148,7 @@ class Music(commands.Cog,name="Music"):
             await ctx.send('Skipped')
         else:
             await ctx.send('No song is playing')
-    @commands.command(name="queue",aliases=['q'],help="Shows the current queue")
+    @commands.command(name="queue",aliases=['q'],description="Hiển thị danh sách phát")
     async def queue(self,ctx):
         if len(self.songQueue)==0:
             await ctx.send('No song in queue')
@@ -160,7 +160,7 @@ class Music(commands.Cog,name="Music"):
                 i+=1
             await ctx.send(embed=embed)
         print(self.songQueue)
-    @commands.command(name="leave",aliases=['disconnect','dc'],help="Leave the voice channel")
+    @commands.command(name="leave",aliases=['disconnect','dc'],description="Rời khỏi voice channel")
     async def leave(self,ctx):
         if self.voiceChannel != None:
             await self.voiceChannel.disconnect()
@@ -171,11 +171,11 @@ class Music(commands.Cog,name="Music"):
             await ctx.send('Disconnected')
         else:
             await ctx.send('Bot is not in a voice channel')
-    @commands.command(name="clear_queue",help="Clear the queue")
+    @commands.command(name="clear_queue",description="Làm sạch danh sách phát")
     async def clear(self,ctx):
         self.songQueue = []
         await ctx.send('Queue cleared')
-    @commands.command(name="remove",help="Remove a song from the queue")
+    @commands.command(name="remove",description="Xóa bài hát khỏi danh sách phát")
     async def remove(self,ctx,*args):
         if len(args)==0:
             await ctx.send('Plz provide the index of the song you want to remove')
@@ -190,7 +190,7 @@ class Music(commands.Cog,name="Music"):
                     await ctx.send('Index out of range')
             except:
                 await ctx.send('Invalid index')
-    @commands.command(name="shuffle",help="Shuffle the queue")
+    @commands.command(name="shuffle",description="Xáo trộn danh sách phát")
     async def shuffle(self,ctx):
         if len(self.songQueue)>0:
             random.shuffle(self.songQueue)
