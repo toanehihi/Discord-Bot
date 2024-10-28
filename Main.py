@@ -4,10 +4,10 @@ from discord.ext.commands import Context
 from dotenv import load_dotenv
 
 #Check config file + load it
-if not os.path.isfile(f"{os.path.realpath(os.path.dirname(__file__))}/config.json"):
+if not os.path.isfile(f"{os.path.realpath(os.path.dirname(__file__))}/config/config.json"):
     sys.exit("'config.json' not found! Please add it and try again.")
 else:
-    with open(f"{os.path.realpath(os.path.dirname(__file__))}/config.json") as file:
+    with open(f"{os.path.realpath(os.path.dirname(__file__))}/config/config.json") as file:
         config = json.load(file)
 
 """	
@@ -202,6 +202,5 @@ class DiscordBot(commands.Bot):
 
 
 if __name__ == "__main__":
-    load_dotenv()
     bot = DiscordBot()
-    bot.run(os.getenv("TOKEN"))
+    bot.run(config["TOKEN"])

@@ -9,7 +9,7 @@ class TodoCog(commands.Cog,name="Todo"):
    def __init__(self, bot):
       self.bot = bot
       # Initialize Firebase
-      cred = credentials.Certificate("features/todo/todo-app-key.json")
+      cred = credentials.Certificate("config/todo-app-key.json")
       if not firebase_admin._apps:
          firebase_admin.initialize_app(cred)
       self.db = firestore.client()
@@ -32,7 +32,7 @@ class TodoCog(commands.Cog,name="Todo"):
          tasks[doc.id] = doc.to_dict()
       return tasks_ref, tasks
 
-   @commands.command(name='add')
+   @commands.command(name='add',help="Thêm một task mới")
    async def add_task(self, ctx, task: str, deadline: str):
       tasks_ref = self.get_user_ref(ctx)
       
@@ -54,7 +54,7 @@ class TodoCog(commands.Cog,name="Todo"):
       tasks_ref.add(new_task)
       await ctx.send(f'Đã thêm công việc: {task}')
 
-   @commands.command(name='list')
+   @commands.command(name='list',help="Liệt kê tất cả các task")
    async def list_tasks(self, ctx):
       tasks_ref, tasks = await self.get_user_tasks(ctx)
       if not tasks:
@@ -102,7 +102,7 @@ class TodoCog(commands.Cog,name="Todo"):
       formatted_list = '\n'.join(task_list)
       await ctx.send(f'Danh sách công việc của bạn:\n{formatted_list}')
 
-   @commands.command(name='edit')
+   @commands.command(name='edit',help="Sửa một task")
    async def edit_task(self, ctx, index: int, new_task_description: str):
       tasks_ref, tasks = await self.get_user_tasks(ctx)
 
@@ -118,7 +118,7 @@ class TodoCog(commands.Cog,name="Todo"):
       else:
          await ctx.send('Không tìm thấy công việc với số thứ tự này.')
 
-   @commands.command(name='complete')
+   @commands.command(name='complete',help="Đánh dấu một task là đã hoàn thành")
    async def complete_task(self, ctx, index: int, status: int):
       tasks_ref, tasks = await self.get_user_tasks(ctx)
 
@@ -142,7 +142,7 @@ class TodoCog(commands.Cog,name="Todo"):
       else:
          await ctx.send('Không tìm thấy công việc với số thứ tự này.')
 
-   @commands.command(name='delete')
+   @commands.command(name='delete',help="Xóa một task")
    async def delete_task(self, ctx, index: int):
       tasks_ref, tasks = await self.get_user_tasks(ctx)
 
@@ -159,7 +159,7 @@ class TodoCog(commands.Cog,name="Todo"):
       else:
          await ctx.send('Không tìm thấy công việc với số thứ tự này.')
 
-   @commands.command(name='deadline')
+   @commands.command(name='deadline',help="Đặt hạn cho một task")
    async def set_deadline(self, ctx, index: int, deadline: str):
       tasks_ref, tasks = await self.get_user_tasks(ctx)
 
@@ -183,7 +183,7 @@ class TodoCog(commands.Cog,name="Todo"):
       else:
          await ctx.send('Không tìm thấy công việc với số thứ tự này.')
 
-   @commands.command(name='list_w')
+   @commands.command(name='list_w',help="Liệt kê các task trong tuần này")
    async def list_this_week_tasks(self, ctx):
       tasks_ref, tasks = await self.get_user_tasks(ctx)
       # Check tasks list is empty
@@ -222,7 +222,7 @@ class TodoCog(commands.Cog,name="Todo"):
       else:
          await ctx.send('Không có công việc chưa hoàn thành trong tuần này.')
 
-   @commands.command(name='list_nw')
+   @commands.command(name='list_nw',help="Liệt kê các task trong tuần tới")
    async def list_next_week_tasks(self, ctx):
       tasks_ref, tasks = await self.get_user_tasks(ctx)
       if not tasks:
@@ -260,7 +260,7 @@ class TodoCog(commands.Cog,name="Todo"):
       else:
          await ctx.send('Không có công việc chưa hoàn thành trong tuần tới.')
 
-   @commands.command(name='clear_todo')
+   @commands.command(name='clear_todo',help="Xóa tất cả các task")
    async def clear_tasks(self, ctx):
       # Get a reference to the user's tasks collection
       tasks_ref = self.get_user_ref(ctx)
@@ -271,7 +271,7 @@ class TodoCog(commands.Cog,name="Todo"):
          task.reference.delete()
       await ctx.send("Đã xóa tất cả công việc.")
 
-   @commands.command(name='todo')
+   @commands.command(name='todo',help="Hiển thị danh sách các lệnh")
    async def help_command(self, ctx):
       try:
          with open('features/todo/todo_help.txt', 'r', encoding='utf-8') as file:
