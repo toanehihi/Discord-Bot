@@ -1,33 +1,30 @@
 ============================== TODO HELP COMMAND ==============================
-                  *** Hãy thêm dấu "!" vào trước mỗi câu lệnh ***
+                  *** Add a "!" before each command when using it: ***
 
-list                                      -----    hiển thị tất cả công việc
+list                                      -----    Display all tasks
 
-list_w                                    -----    hiển thị các công việc cần làm trong tuần này
+list_w                                    -----    Show tasks for this week
 
-list_nw                                   -----    hiển thị các công việc cần làm trong tuần sau
+list_nw                                   -----    Show tasks for next week
 
-clear                                     -----    xoá tất cả các công việc
+clear_todo                                -----    Delete all tasks
 
-add [task_name] [exp_date]                -----    thêm công việc mới 
+add [task_name] [exp_date]                -----    Add a new task
 
-edit [index_of_task] [new_task_name]      -----    sửa 1 công việc
+edit [index_of_task] [new_task_name]      -----    Edit a task
 
-delete [index_of_task]                    -----    xoá 1 công việc
+delete [index_of_task]                    -----    Delete a task
 
-complete [index_of_task] [status]         -----    đánh dấu 1 công việc đã hoàn thành
-Hint: 0 - Chưa hoàn thành, 
-      1 - Đã hoàn thành
+complete [index_of_task] [status]         -----    Mark a task as completed
+Hint: 0 = Incomplete, 
+      1 = Completed
 
-deadline [index_of_task] [exp_date]       -----    sửa deadline của 1 công việc
+deadline [index_of_task] [exp_date]       -----    Update a task's deadline
 
 Status:
-- Chưa hoàn thành [✗]
-- Đã hoàn thành   [✓]
-- Quá hạn         [O]
+- Incomplete [✗]
+- Completed [✓]
+- Overdue [O]
 
 ⚠️Warning:
--  Khi xoá hay đánh dấu hoàn thành cho 1 task, hãy chọn 
-   index của task được hiển thị bởi lệnh !list
-
-
+-  When deleting or marking a task as completed, use the index shown by the "!list" command
