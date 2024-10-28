@@ -1,3 +1,4 @@
+aiohttp
 discord.py
 python-dotenv
 aiohttp
@@ -27,6 +28,11 @@ wrapt
 yarl
 youtube-dl
 youtube-search-python
-fuzzywuzzy
+
+
 yt_dlp
 redis
+
+# lib required for todo
+firebase-admin
+

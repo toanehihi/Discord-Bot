@@ -4,7 +4,7 @@ from ast import alias
 from discord.ext import commands
 from youtubesearchpython import VideosSearch
 from yt_dlp import YoutubeDL
-from Database.cache import RedisCache
+from cache.cache import RedisCache
 
 
 class Music(commands.Cog,name="Music"):
