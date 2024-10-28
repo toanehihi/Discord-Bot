@@ -274,7 +274,7 @@ class TodoCog(commands.Cog,name="Todo"):
    @commands.command(name='todo',description="Hiển thị danh sách các lệnh")
    async def help_command(self, ctx):
       try:
-         with open('features/todo/todo_help.txt', 'r', encoding='utf-8') as file:
+         with open('util/todo_help.txt', 'r', encoding='utf-8') as file:
             help_content = file.read()
          await ctx.send(f'```{help_content}```') 
       except Exception as e:
