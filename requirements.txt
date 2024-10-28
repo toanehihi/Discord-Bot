@@ -29,3 +29,4 @@ youtube-dl
 youtube-search-python
 yt_dlp
 redis
+firebase-admin

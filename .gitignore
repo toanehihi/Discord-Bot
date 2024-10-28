@@ -1,11 +1,9 @@
 # Byte-compiled
-__pycache__/
+/__pycache__/
 
 # Log file
 discord.log
 
-#.env
-.env
+# Virtual environment
+.venv/
 
-#config
-config.json
