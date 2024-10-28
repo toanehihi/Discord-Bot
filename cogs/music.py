@@ -69,7 +69,7 @@ class Music(commands.Cog,name="Music"):
                 self.voiceChannel = await self.songQueue[0][1].connect()
                 
                 if self.voiceChannel == None:
-                    await ctx.send('Error connecting to voice channel')
+                    await ctx.send('Lỗi kết nối đến voice channel')
                     return
             else:
                 await self.voiceChannel.move_to(self.songQueue[0][1])
@@ -102,19 +102,19 @@ class Music(commands.Cog,name="Music"):
         try:
             voiceChannel = ctx.author.voice.channel
         except:
-            await ctx.send('You are not in a voice channel, pls join one')
+            await ctx.send('Bạn phải ở trong voice channel để sử dụng lệnh này')
             return
         if self.isPaused:
             self.voiceChannel.resume()
         else:
             song = self.search(query)
             if type(song)==type(True):
-                await ctx.send("Error, plz try again")
+                await ctx.send("Lỗi kết nối, vui lòng thử lại sau")
             else:
                 if self.isPlaying == True:
-                    await ctx.send(f"**#{len(self.songQueue)+2} -'{song['title']}'** dd")
+                    await ctx.send(f"**#{len(self.songQueue)+2} -'{song['title']}'** đã được thêm vào danh sách phát")
                 else:
-                    await ctx.send(f"**'{song['title']}'** added to the queue")   
+                    await ctx.send(f"**'{song['title']}'** đã được thêm vào danh sách phát")   
 
                 self.songQueue.append([song,voiceChannel])
 
@@ -127,33 +127,33 @@ class Music(commands.Cog,name="Music"):
             self.voiceChannel.pause()
             self.isPaused = True
             self.isPlaying = False
-            await ctx.send('Paused')
+            await ctx.send('Đã tạm dừng')
         elif self.isPaused:
             self.isPaused = False
             self.isPlaying = True
             self.voiceChannel.resume()
-            await ctx.send('Resumed')
+            await ctx.send('Đang phát')
     @commands.command(name="resume",description="Tiếp tục")
     async def resume(self,ctx,*args):
         if self.isPaused:
             self.isPaused = False
             self.isPlaying = True
             self.voiceChannel.resume()
-            await ctx.send('Resumed')
+            await ctx.send('Đang phát')
     @commands.command(name="skip", aliases=["s"], description="Bỏ qua bài hát hiện tại")
     async def skip(self,ctx):
         if self.isPlaying:
             self.voiceChannel.stop()
             await self.play_next()
-            await ctx.send('Skipped')
+            await ctx.send('Bài hát đã được bỏ qua')
         else:
-            await ctx.send('No song is playing')
+            await ctx.send('Không có bài hát nào đang phát')
     @commands.command(name="queue",aliases=['q'],description="Hiển thị danh sách phát")
     async def queue(self,ctx):
         if len(self.songQueue)==0:
-            await ctx.send('No song in queue')
+            await ctx.send('Không có bài hát nào trong danh sách phát')
         else:
-            embed = discord.Embed(title="Song Queue",description="",color=discord.Color.green())
+            embed = discord.Embed(title="Danh sách phát",description="",color=discord.Color.green())
             i = 1
             for song in self.songQueue:
                 embed.description += f"**{i} - {song[0]['title']}**\n"
@@ -168,36 +168,36 @@ class Music(commands.Cog,name="Music"):
             self.songQueue = []
             self.isPlaying = False
             self.isPaused = False
-            await ctx.send('Disconnected')
+            await ctx.send('Đã ngắt kết nối đến voice channel')
         else:
-            await ctx.send('Bot is not in a voice channel')
-    @commands.command(name="clear_queue",description="Làm sạch danh sách phát")
+            await ctx.send('Bot không ở trong voice channel')
+    @commands.command(name="clear_queue",description="Làm mới danh sách phát")
     async def clear(self,ctx):
         self.songQueue = []
         await ctx.send('Queue cleared')
     @commands.command(name="remove",description="Xóa bài hát khỏi danh sách phát")
     async def remove(self,ctx,*args):
         if len(args)==0:
-            await ctx.send('Plz provide the index of the song you want to remove')
+            await ctx.send('Vui lòng nhập index của bài hát cần xóa')
         else:
             try:
                 index = int(args[0])
                 if index>0 and index<=len(self.songQueue):
                     song = self.songQueue[index-1][0]['title']
                     self.songQueue.pop(index-1)
-                    await ctx.send(f"**'{song}'** removed from queue")
+                    await ctx.send(f"**'{song}'** đã được xóa khỏi danh sách phát")
                 else:
-                    await ctx.send('Index out of range')
+                    await ctx.send('')
             except:
-                await ctx.send('Invalid index')
+                await ctx.send('Bạn phải nhập một số  hợp lệ')
     @commands.command(name="shuffle",description="Xáo trộn danh sách phát")
     async def shuffle(self,ctx):
         if len(self.songQueue)>0:
             random.shuffle(self.songQueue)
-            await ctx.send('Queue shuffled')
+            await ctx.send('Danh sách phát đã được xáo trộn')
             await self.queue(ctx)
         else:
-            await ctx.send('No song in queue')
+            await ctx.send('Không có bài hát nào trong danh sách phát')
             
 async def setup(bot) -> None:
     await bot.add_cog(Music(bot))
