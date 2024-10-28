@@ -2,7 +2,6 @@ import json, logging, os, platform, random, sys ,discord
 from discord.ext import commands, tasks
 from discord.ext.commands import Context
 from dotenv import load_dotenv
-from cogs.todo import setup as SetupTodoBot
 
 #Check config file + load it
 if not os.path.isfile(f"{os.path.realpath(os.path.dirname(__file__))}/config.json"):
@@ -205,5 +204,4 @@ class DiscordBot(commands.Bot):
 if __name__ == "__main__":
     load_dotenv()
     bot = DiscordBot()
-    SetupTodoBot(bot)
     bot.run(os.getenv("TOKEN"))

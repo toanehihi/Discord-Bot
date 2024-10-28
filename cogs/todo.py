@@ -3,9 +3,9 @@ from firebase_admin import credentials, firestore
 from datetime import datetime, timedelta, date
 from discord.ext import commands
 
-import cogs.util_todo as util
+import util.util_todo as util
 
-class TodoCog(commands.Cog):
+class TodoCog(commands.Cog,name="Todo"):
    def __init__(self, bot):
       self.bot = bot
       # Initialize Firebase
@@ -297,6 +297,6 @@ class TodoCog(commands.Cog):
 
       batch.commit()
 
-async def setup(bot):
+async def setup(bot)-> None:
    # Setup function to add the TodoCog to the bot.
    await bot.add_cog(TodoCog(bot))
