@@ -27,6 +27,5 @@ wrapt
 yarl
 youtube-dl
 youtube-search-python
-
 yt_dlp
 redis
