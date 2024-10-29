@@ -40,7 +40,7 @@ class MusicPlayer:
             #check if song is in cache
             if cache_song:= self.cache.get_song_url(url):
                 song = cache_song
-                self.voiceChannel.play(discord.FFmpegPCMAudio(song,executable="ffmpeg",**self.FFMPEG_OPTIONS),after = lambda e: asyncio.run_coroutine_threadsafe(self.play_next(),self.bot.loop))
+                self.voiceChannel.play(discord.FFmpegPCMAudio(song,executable="lib\\ffmpeg\\bin\\ffmpeg.exe",**self.FFMPEG_OPTIONS),after = lambda e: asyncio.run_coroutine_threadsafe(self.play_next(),self.bot.loop))
                 return
             
             loop = asyncio.get_event_loop()
