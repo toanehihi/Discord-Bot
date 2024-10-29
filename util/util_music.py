@@ -57,14 +57,12 @@ class MusicPlayer:
         if not self.isPlaying:
             await self.play_next()
     async def connect_to_voice_channel(self,ctx):
-        try:
             if ctx.voice_client is not None and ctx.voice_client.is_connected():
                 if ctx.voice_client.channel!=ctx.author.voice.channel:
                     await ctx.voice_client.move_to(ctx.author.voice.channel)
                 return
             self.voiceChannel = await ctx.author.voice.channel.connect()
-        except:
-            await ctx.send("Bạn phải ở trong voice channel để sử dụng lệnh này")
+
     def get_song_queue(self):
         return self.songQueue
     def set_song_queue(self,queue):
