@@ -4,7 +4,7 @@ from ast import alias
 from discord.ext import commands
 from youtubesearchpython import VideosSearch
 from yt_dlp import YoutubeDL
-from cache.cache import RedisCache
+
 
 
 class MusicPlayer:
@@ -22,7 +22,7 @@ class MusicPlayer:
         }
         
         self.ytdl = YoutubeDL(self.YDL_OPTIONS)
-        self.cache = RedisCache()
+        
         
     def search_song(self,item):
         if item.startswith('https://'):
@@ -37,18 +37,14 @@ class MusicPlayer:
             title = self.songQueue[0][0]['title']
             url = self.songQueue[0][0]['source']
             self.songQueue.pop(0)
-            #check if song is in cache
-            if cache_song:= self.cache.get_song_url(url):
-                song = cache_song
-                self.voiceChannel.play(discord.FFmpegPCMAudio(song,executable="ffmpeg",**self.FFMPEG_OPTIONS),after = lambda e: asyncio.run_coroutine_threadsafe(self.play_next(),self.bot.loop))
-                return
+
             
             loop = asyncio.get_event_loop()
             data = await loop.run_in_executor(None,lambda: self.ytdl.extract_info(url, download = False))
             #cache it
-            self.cache.set_song_url(url,data['url'])
+
             
-            self.voiceChannel.play(discord.FFmpegPCMAudio(data['url'],executable="ffmpeg",**self.FFMPEG_OPTIONS),after = lambda e: asyncio.run_coroutine_threadsafe(self.play_next(),self.bot.loop))
+            self.voiceChannel.play(discord.FFmpegPCMAudio(data['url'],executable="ffmpeg.exe",**self.FFMPEG_OPTIONS),after = lambda e: asyncio.run_coroutine_threadsafe(self.play_next(),self.bot.loop))
             
         else:
             self.isPlaying = False
