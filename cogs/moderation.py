@@ -13,13 +13,13 @@ class Moderation(commands.Cog, name="moderation"):
 
     @commands.hybrid_command(
         name="kick",
-        description="Kick a user out of the server.",
+        description="Kick user chỉ định khỏi server.",
     )
     @commands.has_permissions(kick_members=True)
     @commands.bot_has_permissions(kick_members=True)
     @app_commands.describe(
-        user="The user that should be kicked.",
-        reason="The reason why the user should be kicked.",
+        user="User bị kick.",
+        reason="Lý do kick.",
     )
     async def kick(
         self, context: Context, user: discord.User, *, reason: str = "Not specified"
@@ -36,20 +36,20 @@ class Moderation(commands.Cog, name="moderation"):
         )
         if member.guild_permissions.administrator:
             embed = discord.Embed(
-                description="User has administrator permissions.", color=0xE02B2B
+                description="User có quyền admin.", color=0xE02B2B
             )
             await context.send(embed=embed)
         else:
             try:
                 embed = discord.Embed(
-                    description=f"**{member}** was kicked by **{context.author}**!",
+                    description=f"**{member}** đã bị kick bởi **{context.author}**!",
                     color=0xBEBEFE,
                 )
-                embed.add_field(name="Reason:", value=reason)
+                embed.add_field(name="Lý do:", value=reason)
                 await context.send(embed=embed)
                 try:
                     await member.send(
-                        f"You were kicked by **{context.author}** from **{
+                        f"Bạn bị kick bởi **{context.author}** từ server **{
                             context.guild.name}**!\nReason: {reason}"
                     )
                 except:
@@ -58,20 +58,20 @@ class Moderation(commands.Cog, name="moderation"):
                 await member.kick(reason=reason)
             except:
                 embed = discord.Embed(
-                    description="An error occurred while trying to kick the user. Make sure my role is above the role of the user you want to kick.",
+                    description="Có lỗi xảy ra khi kick. Đảm bảo bạn có quyền kick user khỏi server.",
                     color=0xE02B2B,
                 )
                 await context.send(embed=embed)
 
     @commands.hybrid_command(
         name="nick",
-        description="Change the nickname of a user on a server.",
+        description="Thay đổi nickname của một user trong server.",
     )
     @commands.has_permissions(manage_nicknames=True)
     @commands.bot_has_permissions(manage_nicknames=True)
     @app_commands.describe(
-        user="The user that should have a new nickname.",
-        nickname="The new nickname that should be set.",
+        user="User được đổi nickname.",
+        nickname="Nickname mới cho user.",
     )
     async def nick(
         self, context: Context, user: discord.User, *, nickname: str = None
@@ -89,26 +89,26 @@ class Moderation(commands.Cog, name="moderation"):
         try:
             await member.edit(nick=nickname)
             embed = discord.Embed(
-                description=f"**{member}'s** new nickname is **{nickname}**!",
+                description=f"**{member}'s** có nickname mới là **{nickname}**!",
                 color=0xBEBEFE,
             )
             await context.send(embed=embed)
         except:
             embed = discord.Embed(
-                description="An error occurred while trying to change the nickname of the user. Make sure my role is above the role of the user you want to change the nickname.",
+                description="Có lỗi xảy ra khi đổi nickname. Đảm bảo rằng bạn có quyền đổi nickname người khác.",
                 color=0xE02B2B,
             )
             await context.send(embed=embed)
 
     @commands.hybrid_command(
         name="ban",
-        description="Bans a user from the server.",
+        description="Cấm một user khỏi server.",
     )
     @commands.has_permissions(ban_members=True)
     @commands.bot_has_permissions(ban_members=True)
     @app_commands.describe(
-        user="The user that should be banned.",
-        reason="The reason why the user should be banned.",
+        user="User bị ban.",
+        reason="Lý do ban.",
     )
     async def ban(
         self, context: Context, user: discord.User, *, reason: str = "Not specified"
@@ -124,19 +124,19 @@ class Moderation(commands.Cog, name="moderation"):
         try:
             if member.guild_permissions.administrator:
                 embed = discord.Embed(
-                    description="User has administrator permissions.", color=0xE02B2B
+                    description="User có quyền chặn.", color=0xE02B2B
                 )
                 await context.send(embed=embed)
             else:
                 embed = discord.Embed(
-                    description=f"**{member}** was banned by **{context.author}**!",
+                    description=f"**{member}** đã bị chặn khỏi server bởi **{context.author}**!",
                     color=0xBEBEFE,
                 )
-                embed.add_field(name="Reason:", value=reason)
+                embed.add_field(name="Lý do:", value=reason)
                 await context.send(embed=embed)
                 try:
                     await member.send(
-                        f"You were banned by **{context.author}** from **{
+                        f"Bạn đã bị chặn bởi **{context.author}** từ server **{
                             context.guild.name}**!\nReason: {reason}"
                     )
                 except:
@@ -146,18 +146,18 @@ class Moderation(commands.Cog, name="moderation"):
         except:
             embed = discord.Embed(
                 title="Error!",
-                description="An error occurred while trying to ban the user. Make sure my role is above the role of the user you want to ban.",
+                description="Có lỗi xảy ra khi chặn user. Đảm bảo bạn có quyền chặn user khỏi server.",
                 color=0xE02B2B,
             )
             await context.send(embed=embed)
 
     @commands.hybrid_command(
         name="clear",
-        description="Delete a number of messages.",
+        description="Xoá một số lượng tin nhắn.",
     )
     @commands.has_guild_permissions(manage_messages=True)
     @commands.bot_has_permissions(manage_messages=True)
-    @app_commands.describe(amount="The amount of messages that should be deleted.")
+    @app_commands.describe(amount="Số lượng tin nhắn sẽ xoá.")
     async def clear(self, context: Context, amount: int) -> None:
         """
         Delete a number of messages.
@@ -166,12 +166,12 @@ class Moderation(commands.Cog, name="moderation"):
         :param amount: The number of messages that should be deleted.
         """
         await context.send(
-            "Deleting messages..."
+            "Đang xoá tin nhắn..."
         )  # Bit of a hacky way to make sure the bot responds to the interaction and doens't get a "Unknown Interaction" response
         purged_messages = await context.channel.purge(limit=amount + 1)
         embed = discord.Embed(
-            description=f"**{context.author}** cleared **{
-                len(purged_messages)-1}** messages!",
+            description=f"**{context.author}** đã xoá **{
+                len(purged_messages)-1}** tin nhắn!",
             color=0xBEBEFE,
         )
         await context.channel.send(embed=embed)
