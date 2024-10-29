@@ -48,7 +48,7 @@ class MusicPlayer:
             #cache it
             self.cache.set_song_url(url,data['url'])
             
-            self.voiceChannel.play(discord.FFmpegPCMAudio(data['url'],executable="ffmpeg",**self.FFMPEG_OPTIONS),after = lambda e: asyncio.run_coroutine_threadsafe(self.play_next(),self.bot.loop))
+            self.voiceChannel.play(discord.FFmpegPCMAudio(data['url'],executable="lib\\ffmpeg\\bin\\ffmpeg.exe",**self.FFMPEG_OPTIONS),after = lambda e: asyncio.run_coroutine_threadsafe(self.play_next(),self.bot.loop))
             
         else:
             self.isPlaying = False
