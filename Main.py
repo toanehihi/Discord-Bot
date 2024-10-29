@@ -2,6 +2,7 @@ import json, logging, os, platform, random, sys ,discord
 from discord.ext import commands, tasks
 from discord.ext.commands import Context
 
+
 #Check config file + load it
 if not os.path.isfile(f"{os.path.realpath(os.path.dirname(__file__))}/config/config.json"):
     sys.exit("'config.json' not found! Please add it and try again.")
