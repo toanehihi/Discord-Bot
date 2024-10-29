@@ -2,6 +2,7 @@ import discord
 from discord.ext import commands
 from discord.ext.commands import Context
 import requests
+import json
 
 # Create embeds for weather command
 
@@ -15,8 +16,8 @@ def weather_embed(data):
 
     # Create the embed
     embed = discord.Embed(
-        title=f"Weather Forecast for {city_name}, {country}",
-        description=f"Location: {lat}, {lon}",
+        title=f"Dự báo thời tiết cho {city_name}, {country}",
+        description=f"Vị trí: {lat}, {lon}",
         color=discord.Color.blue()
     )
 
@@ -33,9 +34,9 @@ def weather_embed(data):
     embed.add_field(
         name=f"📅 {entry['dt_txt']}",
         value=(
-            f"🌡️ Temp: {temp:.2f}°C (Feels like {feels_like:.2f}°C)\n"
+            f"🌡️ Nhiệt độ: {temp:.2f}°C (Cảm giác như {feels_like:.2f}°C)\n"
             f"☁️ {description}\n"
-            f"💨 Wind: {wind_speed} m/s | 💧 Humidity: {humidity}%"
+            f"💨 Sức gió: {wind_speed} m/s | 💧 Độ ẩm: {humidity}%"
         ),
         inline=False
     )
@@ -49,31 +50,50 @@ def weather_embed(data):
         embed.add_field(
             name=f"📅 {dt}",
             value=(
-                f"🌡️ Temp: {temp:.2f}°C\n"
+                f"🌡️ Nhiệt độ: {temp:.2f}°C\n"
                 f"☁️ {description}"
             ),
             inline=False
         )
 
-    embed.set_footer(text="Weather data provided by RapidAPI")
-
+    embed.set_footer(text="Được cung cấp bởi RapidAPI")
     return embed
+
+def wiki_embed(data):
+    query = data['searchParameters']['q']
+    img = None
+    if 'knowledgeGraph' in data:
+        info = data['knowledgeGraph']['description'].replace("...", "")
+        img=data['knowledgeGraph']['imageUrl']
+    else:
+        info = data['organic'][0]['snippet']
+    result = info.rsplit('.', 1)[0]
     
+    embed = discord.Embed(
+        title = f"Kết quả tìm kiếm của {query}",
+        description = result,
+        color=discord.Color.blue()
+    )
+    embed.set_thumbnail(url=img)
+    
+    embed.set_footer(text="Được cung cấp bởi Serper Dev")
+    return embed
 
 # Here we name the cog and create a new class for the cog.
 
 
 class Utility(commands.Cog, name="utility"):
+    
     def __init__(self, bot) -> None:
         self.bot = bot
-        
+
     @commands.hybrid_command(
-        name="help", description="List all commands the bot has loaded."
+        name="help", description="Trả về danh sách các lệnh của bot"
     )
     async def help(self, context: Context) -> None:
         prefix = self.bot.config["prefix"]
         embed = discord.Embed(
-            title="Help", description="List of available commands:", color=0xBEBEFE
+            title="Hướng dẫn", description="Danh sách lệnh của bot:", color=0xBEBEFE
         )
         for i in self.bot.cogs:
             if i == "owner" and not (await self.bot.is_owner(context.author)):
@@ -90,10 +110,9 @@ class Utility(commands.Cog, name="utility"):
             )
         await context.send(embed=embed)
 
-
     @commands.hybrid_command(
         name="translate",
-        description="Translate a text from English to Vietnamese.",
+        description="Dịch một đoạn văn bản từ tiếng Anh sang tiếng Việt.",
     )
     async def translate(self, context: Context, *,  text: str) -> None:
         """
@@ -121,11 +140,11 @@ class Utility(commands.Cog, name="utility"):
             else:
                 await context.send("Error: 'data' key not found in the response.")
         else:
-            await context.send(f"Error: {response.status_code}")
+            await context.send("Lỗi khi dịch văn bản.")
 
     @commands.hybrid_command(
         name="weather",
-        description="Get the weather of a city."
+        description="Dự báo thời tiết của một thành phố."
     )
     async def weather(self, context: Context, *, city: str) -> None:
         """
@@ -149,11 +168,11 @@ class Utility(commands.Cog, name="utility"):
             embed = weather_embed(json_response)
             await context.send(embed=embed)
         else:
-            await context.send(f"Error: {response.status_code}")
+            await context.send("Lỗi khi lấy dữ liệu thời tiết.")
 
     @commands.hybrid_command(
         name="wiki",
-        description="Search information on Wikipedia."
+        description="Tìm kiếm thông tin trên Wikipedia."
     )
     async def wiki(self, context: Context, *, query: str) -> None:
         """
@@ -162,23 +181,26 @@ class Utility(commands.Cog, name="utility"):
         :param context: The hybrid command context.
         :param query: The query to search on Wikipedia.
         """
-        url = "https://ai-chatbot.p.rapidapi.com/chat/free"
-        querystring = {"message":query, "uid": context.author}
+        url = "https://google.serper.dev/search"
 
+        payload = json.dumps({
+            "q": query,
+            "hl": "vi"
+        })
         headers = {
-            "x-rapidapi-key": "4e43b4c3bcmsh1827e6c7fea3df3p1ed847jsnf9e4737a2128",
-            "x-rapidapi-host": "ai-chatbot.p.rapidapi.com"
+            'X-API-KEY': 'a529bf83ea927359532ebdfab99d2c4de8724c2e',
+            'Content-Type': 'application/json'
         }
-        
-        response = requests.get(url, headers=headers, params=querystring)
+        response = requests.request("POST", url, headers=headers, data=payload)
+       
         if response.status_code == 200:
             json_response = response.json()
-            if json_response["chatbot"]:
-                await context.send(json_response["chatbot"]["response"])
+            embed = wiki_embed(json_response)
+            await context.send(embed=embed)
         else:
-            await context.send(f"Lỗi khi tìm kiếm thông tin.")           
+            await context.send(f"Lỗi khi tìm kiếm thông tin.")
+
 
 # And then we finally add the cog to the bot so that it can load, unload, reload and use it's content.
-
 async def setup(bot) -> None:
     await bot.add_cog(Utility(bot))

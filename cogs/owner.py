@@ -10,9 +10,9 @@ class Owner(commands.Cog, name="owner"):
 
     @commands.command(
         name="sync",
-        description="Synchronizes the slash commands.",
+        description="Đồng bộ hoá slash commands.",
     )
-    @app_commands.describe(scope="The scope of the sync. Can be `global` or `guild`")
+    @app_commands.describe(scope="Scope khi đồng bộ. Có thể là `global` hoặc `guild`")
     @commands.is_owner()
     async def sync(self, context: Context, scope: str) -> None:
         """
@@ -25,7 +25,7 @@ class Owner(commands.Cog, name="owner"):
         if scope == "global":
             await context.bot.tree.sync()
             embed = discord.Embed(
-                description="Slash commands have been globally synchronized.",
+                description="Slash commands đã được đồng bộ hoá trên global.",
                 color=0xBEBEFE,
             )
             await context.send(embed=embed)
@@ -34,22 +34,22 @@ class Owner(commands.Cog, name="owner"):
             context.bot.tree.copy_global_to(guild=context.guild)
             await context.bot.tree.sync(guild=context.guild)
             embed = discord.Embed(
-                description="Slash commands have been synchronized in this guild.",
+                description="Slash commands đã được đồng bộ hoá ở guild này.",
                 color=0xBEBEFE,
             )
             await context.send(embed=embed)
             return
         embed = discord.Embed(
-            description="The scope must be `global` or `guild`.", color=0xE02B2B
+            description="Scope phải là `global` hoặc `guild`.", color=0xE02B2B
         )
         await context.send(embed=embed)
 
     @commands.command(
         name="unsync",
-        description="Unsynchronizes the slash commands.",
+        description="Huỷ đồng bộ hoá slash commands.",
     )
     @app_commands.describe(
-        scope="The scope of the sync. Can be `global`or `guild`"
+        scope="Scope khi huỷ đồng bộ. Có thể là `global` hoặc `guild`"
     )
     @commands.is_owner()
     async def unsync(self, context: Context, scope: str) -> None:
@@ -64,7 +64,7 @@ class Owner(commands.Cog, name="owner"):
             context.bot.tree.clear_commands(guild=None)
             await context.bot.tree.sync()
             embed = discord.Embed(
-                description="Slash commands have been globally unsynchronized.",
+                description="Slash commands đã được huỷ đồng bộ trên global.",
                 color=0xBEBEFE,
             )
             await context.send(embed=embed)
@@ -73,21 +73,21 @@ class Owner(commands.Cog, name="owner"):
             context.bot.tree.clear_commands(guild=context.guild)
             await context.bot.tree.sync(guild=context.guild)
             embed = discord.Embed(
-                description="Slash commands have been unsynchronized in this guild.",
+                description="Slash commands đã được huỷ đồng bộ ở guild này.",
                 color=0xBEBEFE,
             )
             await context.send(embed=embed)
             return
         embed = discord.Embed(
-            description="The scope must be `global` or `guild`.", color=0xE02B2B
+            description="Scope phải là `global` hoặc `guild`.", color=0xE02B2B
         )
         await context.send(embed=embed)
 
     @commands.hybrid_command(
         name="load",
-        description="Load a cog",
+        description="Tải lên một cog mới.",
     )
-    @app_commands.describe(cog="The name of the cog to load")
+    @app_commands.describe(cog="Tên của cog cần tải lên.")
     @commands.is_owner()
     async def load(self, context: Context, cog: str) -> None:
         """
@@ -100,20 +100,20 @@ class Owner(commands.Cog, name="owner"):
             await self.bot.load_extension(f"cogs.{cog}")
         except Exception:
             embed = discord.Embed(
-                description=f"Could not load the `{cog}` cog.", color=0xE02B2B
+                description=f"Không thể tải `{cog}` cog.", color=0xE02B2B
             )
             await context.send(embed=embed)
             return
         embed = discord.Embed(
-            description=f"Successfully loaded the `{cog}` cog.", color=0xBEBEFE
+            description=f"Tải thành công `{cog}` cog.", color=0xBEBEFE
         )
         await context.send(embed=embed)
 
     @commands.hybrid_command(
         name="unload",
-        description="Unloads a cog.",
+        description="Huỷ bỏ một cog.",
     )
-    @app_commands.describe(cog="The name of the cog to unload")
+    @app_commands.describe(cog="Tên của cog cần huỷ bỏ.")
     @commands.is_owner()
     async def unload(self, context: Context, cog: str) -> None:
         """
@@ -126,20 +126,20 @@ class Owner(commands.Cog, name="owner"):
             await self.bot.unload_extension(f"cogs.{cog}")
         except Exception:
             embed = discord.Embed(
-                description=f"Could not unload the `{cog}` cog.", color=0xE02B2B
+                description=f"Không thể huỷ bỏ `{cog}` cog.", color=0xE02B2B
             )
             await context.send(embed=embed)
             return
         embed = discord.Embed(
-            description=f"Successfully unloaded the `{cog}` cog.", color=0xBEBEFE
+            description=f"Huỷ bỏ thành công `{cog}` cog.", color=0xBEBEFE
         )
         await context.send(embed=embed)
 
     @commands.hybrid_command(
         name="reload",
-        description="Reloads a cog.",
+        description="Reload một cog.",
     )
-    @app_commands.describe(cog="The name of the cog to reload")
+    @app_commands.describe(cog="Tên của cog cần reload.")
     @commands.is_owner()
     async def reload(self, context: Context, cog: str) -> None:
         """
@@ -152,12 +152,12 @@ class Owner(commands.Cog, name="owner"):
             await self.bot.reload_extension(f"cogs.{cog}")
         except Exception:
             embed = discord.Embed(
-                description=f"Could not reload the `{cog}` cog.", color=0xE02B2B
+                description=f"Không thể reload `{cog}` cog.", color=0xE02B2B
             )
             await context.send(embed=embed)
             return
         embed = discord.Embed(
-            description=f"Successfully reloaded the `{cog}` cog.", color=0xBEBEFE
+            description=f"Reload thành công `{cog}` cog.", color=0xBEBEFE
         )
         await context.send(embed=embed)
 
@@ -178,9 +178,9 @@ class Owner(commands.Cog, name="owner"):
 
     @commands.hybrid_command(
         name="say",
-        description="The bot will say anything you want.",
+        description="Bot sẽ nói những gì bạn muốn.",
     )
-    @app_commands.describe(message="The message that should be repeated by the bot")
+    @app_commands.describe(message="Thông điệp mà bạn muốn bot nói.")
     @commands.is_owner()
     async def say(self, context: Context, *, message: str) -> None:
         """
@@ -193,9 +193,9 @@ class Owner(commands.Cog, name="owner"):
 
     @commands.hybrid_command(
         name="embed",
-        description="The bot will say anything you want, but within embeds.",
+        description="Bot sẽ nói những gì bạn muốn, nhưng ở trong một embed.",
     )
-    @app_commands.describe(message="The message that should be repeated by the bot")
+    @app_commands.describe(message="Thông điệp mà bạn muốn bot nói.")
     @commands.is_owner()
     async def embed(self, context: Context, *, message: str) -> None:
         """
