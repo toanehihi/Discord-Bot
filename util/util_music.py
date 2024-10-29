@@ -4,7 +4,7 @@ from ast import alias
 from discord.ext import commands
 from youtubesearchpython import VideosSearch
 from yt_dlp import YoutubeDL
-
+from cache.cache import RedisCache
 
 
 class MusicPlayer:
@@ -22,7 +22,7 @@ class MusicPlayer:
         }
         
         self.ytdl = YoutubeDL(self.YDL_OPTIONS)
-        
+        self.cache = RedisCache()
         
     def search_song(self,item):
         if item.startswith('https://'):
@@ -46,7 +46,7 @@ class MusicPlayer:
             loop = asyncio.get_event_loop()
             data = await loop.run_in_executor(None,lambda: self.ytdl.extract_info(url, download = False))
             #cache it
-
+            self.cache.set_song_url(url,data['url'])
             
             self.voiceChannel.play(discord.FFmpegPCMAudio(data['url'],executable="lib\\ffmpeg\\bin\\ffmpeg.exe",**self.FFMPEG_OPTIONS),after = lambda e: asyncio.run_coroutine_threadsafe(self.play_next(),self.bot.loop))
             
