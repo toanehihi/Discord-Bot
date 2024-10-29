@@ -23,11 +23,11 @@ class MusicPlayer:
         
         self.ytdl = YoutubeDL(self.YDL_OPTIONS)
         self.cache = RedisCache()
-        self.ffmpeg_directory = 'lib\\ffmpeg\\bin\\ffmpeg.exe'
+        self.ffmpeg_directory = None
         if  os.name == 'nt':  #win
-            ffmpeg_path = os.path.join(self.ffmpeg_directory, 'ffmpeg.exe')
+            self.ffmpeg_directory = 'lib/ffmpeg/bin/ffmpeg.exe'
         else:  #linux | mac
-             ffmpeg_path = os.path.join(ffmpeg_directory, 'ffmpeg')
+            self.ffmpeg_directory = 'ffmpeg'
         
     def search_song(self,item):
         if item.startswith('https://'):
