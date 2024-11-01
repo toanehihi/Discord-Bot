@@ -33,8 +33,14 @@ class TodoCog(commands.Cog,name="Todo"):
       return tasks_ref, tasks
 
    @commands.command(name='add',description="Thêm một task mới")
-   async def add_task(self, ctx, task: str, deadline: str):
+   async def add_task(self, ctx, *, task_and_deadline: str):
+      user_name = ctx.author.display_name
       tasks_ref = self.get_user_ref(ctx)
+
+      # Split the task and deadline from the input
+      parts = task_and_deadline.rsplit(' ', 1)
+      task = parts[0]
+      deadline = parts[1]
       
       # Validate the deadline date format
       is_valid, result = util.is_valid_date(deadline)
@@ -52,13 +58,14 @@ class TodoCog(commands.Cog,name="Todo"):
       }
       
       tasks_ref.add(new_task)
-      await ctx.send(f'Đã thêm công việc: {task}')
+      await ctx.send(f'[{user_name}] Đã thêm công việc: {task}')
 
    @commands.command(name='list',description="Liệt kê tất cả các task")
    async def list_tasks(self, ctx):
+      user_name = ctx.author.display_name
       tasks_ref, tasks = await self.get_user_tasks(ctx)
       if not tasks:
-         await ctx.send('Danh sách công việc của bạn trống.')
+         await ctx.send(f'[{user_name}] Danh sách công việc của bạn trống.')
          return
 
       # Update overdue status for all tasks
@@ -100,10 +107,11 @@ class TodoCog(commands.Cog,name="Todo"):
          task_list.append(f"{i}. [{status}] - {value['task']} - {deadline}".strip())
       
       formatted_list = '\n'.join(task_list)
-      await ctx.send(f'Danh sách công việc của bạn:\n{formatted_list}')
+      await ctx.send(f'[{user_name}] Danh sách công việc của bạn:\n{formatted_list}')
 
    @commands.command(name='edit',description="Sửa một task")
-   async def edit_task(self, ctx, index: int, new_task_description: str):
+   async def edit_task(self, ctx, index: int, *, new_task_description: str):
+      user_name = ctx.author.display_name
       tasks_ref, tasks = await self.get_user_tasks(ctx)
 
       # Check if the task index is valid
@@ -114,17 +122,18 @@ class TodoCog(commands.Cog,name="Todo"):
          old_task = tasks[task_id]['task']
 
          tasks_ref.document(task_id).update({'task': new_task_description})
-         await ctx.send(f'Đã sửa công việc:\nCũ: {old_task}\nMới: {new_task_description}')
+         await ctx.send(f'[{user_name}] Đã sửa công việc:\nCũ: {old_task}\nMới: {new_task_description}')
       else:
-         await ctx.send('Không tìm thấy công việc với số thứ tự này.')
+         await ctx.send(f'[{user_name}] Không tìm thấy công việc với số thứ tự này.')
 
    @commands.command(name='complete',description="Đánh dấu một task là đã hoàn thành")
    async def complete_task(self, ctx, index: int, status: int):
+      user_name = ctx.author.display_name
       tasks_ref, tasks = await self.get_user_tasks(ctx)
 
       # Check if the status is valid
       if not (status == 0 or status == 1):
-         await ctx.send('Trạng thái không hợp lệ. Vui lòng sử dụng 0 (chưa hoàn thành) hoặc 1 (đã hoàn thành).')
+         await ctx.send(f'[{user_name}] Trạng thái không hợp lệ. Vui lòng sử dụng 0 (chưa hoàn thành) hoặc 1 (đã hoàn thành).')
          return
       
       # Check if the task index is valid
@@ -138,12 +147,13 @@ class TodoCog(commands.Cog,name="Todo"):
          }
          tasks_ref.document(task_id).update(updates)
          status_text = "hoàn thành" if status == 1 else "chưa hoàn thành"
-         await ctx.send(f'Đã đánh dấu công việc {index} là {status_text}.')
+         await ctx.send(f'[{user_name}] Đã đánh dấu công việc {index} là {status_text}.')
       else:
-         await ctx.send('Không tìm thấy công việc với số thứ tự này.')
+         await ctx.send(f'[{user_name}] Không tìm thấy công việc với số thứ tự này.')
 
    @commands.command(name='delete',description="Xóa một task")
    async def delete_task(self, ctx, index: int):
+      user_name = ctx.author.display_name
       tasks_ref, tasks = await self.get_user_tasks(ctx)
 
       # Check if the task index is valid
@@ -155,12 +165,13 @@ class TodoCog(commands.Cog,name="Todo"):
          deleted_task = tasks[task_id]
 
          tasks_ref.document(task_id).delete()
-         await ctx.send(f'Đã xóa công việc: {deleted_task["task"]}')
+         await ctx.send(f'[{user_name}] Đã xóa công việc: {deleted_task["task"]}')
       else:
-         await ctx.send('Không tìm thấy công việc với số thứ tự này.')
+         await ctx.send(f'[{user_name}] Không tìm thấy công việc với số thứ tự này.')
 
    @commands.command(name='deadline',description="Đặt hạn cho một task")
    async def set_deadline(self, ctx, index: int, deadline: str):
+      user_name = ctx.author.display_name
       tasks_ref, tasks = await self.get_user_tasks(ctx)
 
       # Check if the task index is valid
@@ -179,16 +190,17 @@ class TodoCog(commands.Cog,name="Todo"):
             'overdue': False
          })
 
-         await ctx.send(f'Đã đặt hạn cho công việc {index}: {deadline}')
+         await ctx.send(f'[{user_name}] Đã đặt hạn cho công việc {index}: {deadline}')
       else:
-         await ctx.send('Không tìm thấy công việc với số thứ tự này.')
+         await ctx.send(f'[{user_name}] Không tìm thấy công việc với số thứ tự này.')
 
    @commands.command(name='list_w',description="Liệt kê các task trong tuần này")
    async def list_this_week_tasks(self, ctx):
+      user_name = ctx.author.display_name
       tasks_ref, tasks = await self.get_user_tasks(ctx)
       # Check tasks list is empty
       if not tasks:
-         await ctx.send('Danh sách công việc của bạn trống.')
+         await ctx.send(f'[{user_name}] Danh sách công việc của bạn trống.')
          return
 
       # Update overdue status before listing
@@ -218,15 +230,16 @@ class TodoCog(commands.Cog,name="Todo"):
 
       if task_list:
          formatted_list = '\n'.join(task_list)
-         await ctx.send(f'Danh sách công việc chưa hoàn thành trong tuần này:\n{formatted_list}')
+         await ctx.send(f'[{user_name}] Danh sách công việc chưa hoàn thành trong tuần này:\n{formatted_list}')
       else:
-         await ctx.send('Không có công việc chưa hoàn thành trong tuần này.')
+         await ctx.send(f'[{user_name}] Không có công việc chưa hoàn thành trong tuần này.')
 
    @commands.command(name='list_nw',description="Liệt kê các task trong tuần tới")
    async def list_next_week_tasks(self, ctx):
+      user_name = ctx.author.display_name
       tasks_ref, tasks = await self.get_user_tasks(ctx)
       if not tasks:
-         await ctx.send('Danh sách công việc của bạn trống.')
+         await ctx.send(f'[{user_name}] Danh sách công việc của bạn trống.')
          return
 
       await self.check_overdue_tasks(tasks_ref, tasks)
@@ -256,12 +269,14 @@ class TodoCog(commands.Cog,name="Todo"):
       if task_list:
          formatted_list = '\n'.join(task_list)
          legend = "\nChú thích:\n[✗] - Chưa hoàn thành\n[O] - Quá hạn"
-         await ctx.send(f'Danh sách công việc chưa hoàn thành trong tuần tới:\n{formatted_list}{legend}')
+         await ctx.send(f'[{user_name}] Danh sách công việc chưa hoàn thành trong tuần tới:\n{formatted_list}{legend}')
       else:
-         await ctx.send('Không có công việc chưa hoàn thành trong tuần tới.')
+         await ctx.send(f'[{user_name}] Không có công việc chưa hoàn thành trong tuần tới.')
 
    @commands.command(name='clear_todo',description="Xóa tất cả các task")
    async def clear_tasks(self, ctx):
+      user_name = ctx.author.display_name
+      
       # Get a reference to the user's tasks collection
       tasks_ref = self.get_user_ref(ctx)
       tasks = tasks_ref.stream()
@@ -269,7 +284,7 @@ class TodoCog(commands.Cog,name="Todo"):
       # Delete all tasks
       for task in tasks:
          task.reference.delete()
-      await ctx.send("Đã xóa tất cả công việc.")
+      await ctx.send(f'[{user_name}] Đã xóa tất cả công việc.')
 
    @commands.command(name='todo',description="Hiển thị danh sách các lệnh")
    async def help_command(self, ctx):
