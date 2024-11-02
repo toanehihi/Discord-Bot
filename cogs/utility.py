@@ -1,11 +1,11 @@
 import discord
+from discord import app_commands
 from discord.ext import commands
 from discord.ext.commands import Context
 import requests
 import json
 
 # Create embeds for weather command
-
 
 def weather_embed(data):
     city_name = data['city']['name']
@@ -79,21 +79,20 @@ def wiki_embed(data):
     embed.set_footer(text="Được cung cấp bởi Serper Dev")
     return embed
 
-# Here we name the cog and create a new class for the cog.
-
+# Create a new cog class
 
 class Utility(commands.Cog, name="utility"):
     
     def __init__(self, bot) -> None:
         self.bot = bot
 
-    @commands.hybrid_command(
-        name="help", description="Trả về danh sách các lệnh của bot"
-    )
+    @commands.hybrid_command(name="help", description="Trả về danh sách các lệnh của bot")
     async def help(self, context: Context) -> None:
         prefix = self.bot.config["prefix"]
         embed = discord.Embed(
-            title="Hướng dẫn", description="Danh sách lệnh của bot:", color=0xBEBEFE
+            title="Hướng dẫn", 
+            description="Danh sách lệnh của bot:", 
+            color=0xBEBEFE
         )
         for i in self.bot.cogs:
             if i == "owner" and not (await self.bot.is_owner(context.author)):
@@ -110,17 +109,10 @@ class Utility(commands.Cog, name="utility"):
             )
         await context.send(embed=embed)
 
-    @commands.hybrid_command(
-        name="translate",
-        description="Dịch một đoạn văn bản từ tiếng Anh sang tiếng Việt.",
-    )
+    @commands.hybrid_command(name="translate", description="Dịch một đoạn văn bản từ tiếng Anh sang tiếng Việt.")
+    @app_commands.describe(text= "Văn bản cần dịch.")
     async def translate(self, context: Context, *,  text: str) -> None:
-        """
-        Translate a text from English to Vietnamese.
 
-        :param context: The hybrid command context.
-        :param text: The text to translate.
-        """
         url = "https://google-translator9.p.rapidapi.com/v2"
         querystring = {"q": text, "target": "vi",
                        "source": "en", "format": "text"}
@@ -142,17 +134,9 @@ class Utility(commands.Cog, name="utility"):
         else:
             await context.send("Lỗi khi dịch văn bản.")
 
-    @commands.hybrid_command(
-        name="weather",
-        description="Dự báo thời tiết của một thành phố."
-    )
+    @commands.hybrid_command(name="weather", description="Thông tin thời tiết của một thành phố.")
+    @app_commands.describe(city="Tên thành phố cần xem thời tiết.")
     async def weather(self, context: Context, *, city: str) -> None:
-        """
-        Get the weather of a city.
-
-        :param context: The hybrid command context.
-        :param weather: The name of city to get the weather.
-        """
         url = "https://weather-api167.p.rapidapi.com/api/weather/forecast"
         querystring = {"place": city}
 
@@ -170,21 +154,13 @@ class Utility(commands.Cog, name="utility"):
         else:
             await context.send("Lỗi khi lấy dữ liệu thời tiết.")
 
-    @commands.hybrid_command(
-        name="wiki",
-        description="Tìm kiếm thông tin trên Wikipedia."
-    )
-    async def wiki(self, context: Context, *, query: str) -> None:
-        """
-        Search information on Wikipedia.
-
-        :param context: The hybrid command context.
-        :param query: The query to search on Wikipedia.
-        """
+    @commands.hybrid_command(name="wiki", description="Tìm kiếm thông tin trên Wikipedia.")
+    @app_commands.describe(keyword="Từ khoá cần tìm kiếm.")
+    async def wiki(self, context: Context, *, keyword: str) -> None:
         url = "https://google.serper.dev/search"
 
         payload = json.dumps({
-            "q": query,
+            "q": keyword,
             "hl": "vi"
         })
         headers = {
@@ -200,7 +176,6 @@ class Utility(commands.Cog, name="utility"):
         else:
             await context.send(f"Lỗi khi tìm kiếm thông tin.")
 
-
-# And then we finally add the cog to the bot so that it can load, unload, reload and use it's content.
+# And then we finally add the cog to the bot
 async def setup(bot) -> None:
     await bot.add_cog(Utility(bot))
