@@ -39,10 +39,10 @@ class Music(commands.Cog,name="Music"):
         player = self.get_music_player(ctx)
         if player.isPlaying:
             player.voiceChannel.stop()
-            await player.play_next()
             await ctx.send("Bài hát đã được bỏ qua")
-        else:
-            await ctx.send("Bot chưa phát bài hát nào")
+            return
+        
+        await ctx.send("Bot chưa phát bài hát nào")
     @commands.command(name="pause", description="Tạm dừng bài hát")
     async def pause(self, ctx):
         player = self.get_music_player(ctx)
