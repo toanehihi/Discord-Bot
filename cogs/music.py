@@ -37,7 +37,7 @@ class Music(commands.Cog,name="Music"):
     @commands.command(name="skip", description="Bỏ qua bài hát hiện tại")
     async def skip(self, ctx):
         player = self.get_music_player(ctx)
-        if player.voiceChannel:
+        if player.isPlaying:
             player.voiceChannel.stop()
             await player.play_next()
             await ctx.send("Bài hát đã được bỏ qua")
