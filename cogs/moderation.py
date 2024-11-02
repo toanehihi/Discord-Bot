@@ -16,11 +16,8 @@ class Moderation(commands.Cog, name="moderation"):
         reason="Lý do kick.",
     )
     async def kick(
-        self, context: Context, user: discord.User, *, reason: str = "Không xác định"
-    ) -> None:
-        member = context.guild.get_member(user.id) or await context.guild.fetch_member(
-            user.id
-        )
+        self, context: Context, user: discord.User, *, reason: str = "Không xác định") -> None:
+        member = context.guild.get_member(user.id) or await context.guild.fetch_member(user.id)
         if member.guild_permissions.administrator:
             embed = discord.Embed(
                 description="User có quyền admin.", color=0xE02B2B
@@ -57,12 +54,8 @@ class Moderation(commands.Cog, name="moderation"):
         user="User được đổi nickname.",
         nickname="Nickname mới cho user.",
     )
-    async def nick(
-        self, context: Context, user: discord.User, *, nickname: str = None
-    ) -> None:
-        member = context.guild.get_member(user.id) or await context.guild.fetch_member(
-            user.id
-        )
+    async def nick(self, context: Context, user: discord.User, *, nickname: str = None) -> None:
+        member = context.guild.get_member(user.id) or await context.guild.fetch_member(user.id)
         try:
             await member.edit(nick=nickname)
             embed = discord.Embed(
@@ -84,9 +77,7 @@ class Moderation(commands.Cog, name="moderation"):
         user="User bị ban.",
         reason="Lý do ban.",
     )
-    async def ban(
-        self, context: Context, user: discord.User, *, reason: str = "Không xác định"
-    ) -> None:
+    async def ban(self, context: Context, user: discord.User, *, reason: str = "Không xác định") -> None:
         member = context.guild.get_member(user.id) or await context.guild.fetch_member(user.id)
         try:
             if member.guild_permissions.administrator:
