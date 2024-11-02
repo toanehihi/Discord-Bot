@@ -33,7 +33,7 @@ class Moderation(commands.Cog, name="moderation"):
                 await context.send(embed=embed)
                 try:
                     await member.send(
-                        f"Bạn bị kick bởi **{context.author}** từ server **{context.guild.name}**!\nReason: {reason}"
+                        f"Bạn bị kick bởi **{context.author}** từ server **{context.guild.name}**!\nLý do: {reason}"
                     )
                 except:
                     # Couldn't send a message for the user
@@ -45,29 +45,6 @@ class Moderation(commands.Cog, name="moderation"):
                     color=0xE02B2B,
                 )
                 await context.send(embed=embed)
-
-    @commands.hybrid_command(name="nick", description="Thay đổi nickname của một user trong server.")
-    @commands.has_permissions(manage_nicknames=True)
-    @commands.bot_has_permissions(manage_nicknames=True)
-    @app_commands.describe(
-        user="User được đổi nickname.",
-        nickname="Nickname mới cho user."
-    )
-    async def nick(self, context: Context, user: discord.User, *, nickname: str = None) -> None:
-        member = context.guild.get_member(user.id) or await context.guild.fetch_member(user.id)
-        try:
-            await member.edit(nick=nickname)
-            embed = discord.Embed(
-                description=f"**{member}'s** có nickname mới là **{nickname}**!",
-                color=0xBEBEFE,
-            )
-            await context.send(embed=embed)
-        except:
-            embed = discord.Embed(
-                description="Có lỗi xảy ra khi đổi nickname. Đảm bảo rằng bạn có quyền đổi nickname người khác.",
-                color=0xE02B2B,
-            )
-            await context.send(embed=embed)
 
     @commands.hybrid_command(name="ban", description="Cấm một user khỏi server.")
     @commands.has_permissions(ban_members=True)
@@ -93,7 +70,7 @@ class Moderation(commands.Cog, name="moderation"):
                 await context.send(embed=embed)
                 try:
                     await member.send(
-                        f"Bạn đã bị chặn bởi **{context.author}** từ server **{context.guild.name}**!\nReason: {reason}"
+                        f"Bạn đã bị chặn bởi **{context.author}** từ server **{context.guild.name}**!\nLý do: {reason}"
                     )
                 except:
                     # Couldn't send a message for the user
@@ -121,8 +98,7 @@ class Moderation(commands.Cog, name="moderation"):
             description=f"**{context.author}** đã xoá **{len(purged_messages)-1}** tin nhắn!",
             color=0xBEBEFE,
         )
-        await context.channel.send(embed=embed)
-        
+        await context.channel.send(embed=embed)        
     
 async def setup(bot) -> None:
     await bot.add_cog(Moderation(bot))
