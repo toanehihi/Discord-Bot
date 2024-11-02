@@ -82,24 +82,6 @@ class Owner(commands.Cog, name="owner"):
         )
         await context.send(embed=embed)
 
-    @commands.hybrid_command(name="unload", description="Huỷ bỏ một cog.")
-    @app_commands.describe(cog="Tên của cog cần huỷ bỏ.")
-    @commands.is_owner()
-    async def unload(self, context: Context, cog: str) -> None:
-        
-        try:
-            await self.bot.unload_extension(f"cogs.{cog}")
-        except Exception:
-            embed = discord.Embed(
-                description=f"Không thể huỷ bỏ `{cog}` cog.", color=0xE02B2B
-            )
-            await context.send(embed=embed)
-            return
-        embed = discord.Embed(
-            description=f"Huỷ bỏ thành công `{cog}` cog.", color=0xBEBEFE
-        )
-        await context.send(embed=embed)
-
     @commands.hybrid_command(name="reload", description="Reload một cog.")
     @app_commands.describe(cog="Tên của cog cần reload.")
     @commands.is_owner()
