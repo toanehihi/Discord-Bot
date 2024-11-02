@@ -101,7 +101,7 @@ class Utility(commands.Cog, name="utility"):
             commands = cog.get_commands()
             data = []
             for command in commands:
-                description = command.description.partition("\n")[0]
+                description = command.description
                 data.append(f"{prefix}{command.name} - {description}")
             help_text = "\n".join(data)
             embed.add_field(
@@ -109,8 +109,8 @@ class Utility(commands.Cog, name="utility"):
             )
         await context.send(embed=embed)
 
-    @commands.hybrid_command(name="translate", description="Dịch một đoạn văn bản từ tiếng Anh sang tiếng Việt.")
-    @app_commands.describe(text= "Văn bản cần dịch.")
+    @commands.hybrid_command(name="translate", description="Dịch một đoạn văn bản từ tiếng Anh sang tiếng Việt")
+    @app_commands.describe(text= "Văn bản cần dịch")
     async def translate(self, context: Context, *,  text: str) -> None:
 
         url = "https://google-translator9.p.rapidapi.com/v2"
@@ -134,8 +134,8 @@ class Utility(commands.Cog, name="utility"):
         else:
             await context.send("Lỗi khi dịch văn bản.")
 
-    @commands.hybrid_command(name="weather", description="Thông tin thời tiết của một thành phố.")
-    @app_commands.describe(city="Tên thành phố cần xem thời tiết.")
+    @commands.hybrid_command(name="weather", description="Thông tin thời tiết của một thành phố")
+    @app_commands.describe(city="Tên thành phố cần xem thời tiết")
     async def weather(self, context: Context, *, city: str) -> None:
         url = "https://weather-api167.p.rapidapi.com/api/weather/forecast"
         querystring = {"place": city}
@@ -154,8 +154,8 @@ class Utility(commands.Cog, name="utility"):
         else:
             await context.send("Lỗi khi lấy dữ liệu thời tiết.")
 
-    @commands.hybrid_command(name="wiki", description="Tìm kiếm thông tin trên Wikipedia.")
-    @app_commands.describe(keyword="Từ khoá cần tìm kiếm.")
+    @commands.hybrid_command(name="wiki", description="Tìm kiếm thông tin trên Wikipedia")
+    @app_commands.describe(keyword="Từ khoá cần tìm kiếm")
     async def wiki(self, context: Context, *, keyword: str) -> None:
         url = "https://google.serper.dev/search"
 

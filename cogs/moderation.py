@@ -8,15 +8,14 @@ class Moderation(commands.Cog, name="moderation"):
     def __init__(self, bot) -> None:
         self.bot = bot
 
-    @commands.hybrid_command(name="kick", description="Kick user chỉ định khỏi server.")
+    @commands.hybrid_command(name="kick", description="Kick user chỉ định khỏi server")
     @commands.has_permissions(kick_members=True)
     @commands.bot_has_permissions(kick_members=True)
     @app_commands.describe(
-        user="User bị kick.",
-        reason="Lý do kick."
+        user="User bị kick",
+        reason="Lý do kick"
     )
-    async def kick(
-        self, context: Context, user: discord.User, *, reason: str = "Không xác định") -> None:
+    async def kick(self, context: Context, user: discord.User, *, reason: str = "Không xác định") -> None:
         member = context.guild.get_member(user.id) or await context.guild.fetch_member(user.id)
         if member.guild_permissions.administrator:
             embed = discord.Embed(
@@ -27,7 +26,7 @@ class Moderation(commands.Cog, name="moderation"):
             try:
                 embed = discord.Embed(
                     description=f"**{member}** đã bị kick bởi **{context.author}**!",
-                    color=0xBEBEFE,
+                    color=0xBEBEFE
                 )
                 embed.add_field(name="Lý do:", value=reason)
                 await context.send(embed=embed)
@@ -46,12 +45,12 @@ class Moderation(commands.Cog, name="moderation"):
                 )
                 await context.send(embed=embed)
 
-    @commands.hybrid_command(name="ban", description="Cấm một user khỏi server.")
+    @commands.hybrid_command(name="ban", description="Cấm một user khỏi server")
     @commands.has_permissions(ban_members=True)
     @commands.bot_has_permissions(ban_members=True)
     @app_commands.describe(
-        user="User bị ban.",
-        reason="Lý do ban."
+        user="User bị ban",
+        reason="Lý do ban"
     )
     async def ban(self, context: Context, user: discord.User, *, reason: str = "Không xác định") -> None:
         member = context.guild.get_member(user.id) or await context.guild.fetch_member(user.id)
@@ -84,18 +83,15 @@ class Moderation(commands.Cog, name="moderation"):
             )
             await context.send(embed=embed)
 
-    @commands.hybrid_command(
-        name="clear",
-        description="Xoá một số lượng tin nhắn."
-    )
+    @commands.hybrid_command(name="clear", description="Xoá một số lượng tin nhắn")
     @commands.has_guild_permissions(manage_messages=True)
     @commands.bot_has_permissions(manage_messages=True)
-    @app_commands.describe(amount="Số lượng tin nhắn sẽ xoá.")
+    @app_commands.describe(amount="Số lượng tin nhắn sẽ xoá")
     async def clear(self, context: Context, amount: int) -> None:
         await context.send("Đang xoá tin nhắn...") 
         purged_messages = await context.channel.purge(limit=amount + 2)
         embed = discord.Embed(
-            description=f"**{context.author}** đã xoá **{len(purged_messages)-1}** tin nhắn!",
+            description=f"**{context.author}** đã xoá **{len(purged_messages)-2}** tin nhắn!",
             color=0xBEBEFE,
         )
         await context.channel.send(embed=embed)        
