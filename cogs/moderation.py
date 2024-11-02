@@ -13,7 +13,7 @@ class Moderation(commands.Cog, name="moderation"):
     @commands.bot_has_permissions(kick_members=True)
     @app_commands.describe(
         user="User bị kick.",
-        reason="Lý do kick.",
+        reason="Lý do kick."
     )
     async def kick(
         self, context: Context, user: discord.User, *, reason: str = "Không xác định") -> None:
@@ -33,8 +33,7 @@ class Moderation(commands.Cog, name="moderation"):
                 await context.send(embed=embed)
                 try:
                     await member.send(
-                        f"Bạn bị kick bởi **{context.author}** từ server **{
-                            context.guild.name}**!\nReason: {reason}"
+                        f"Bạn bị kick bởi **{context.author}** từ server **{context.guild.name}**!\nReason: {reason}"
                     )
                 except:
                     # Couldn't send a message for the user
@@ -52,7 +51,7 @@ class Moderation(commands.Cog, name="moderation"):
     @commands.bot_has_permissions(manage_nicknames=True)
     @app_commands.describe(
         user="User được đổi nickname.",
-        nickname="Nickname mới cho user.",
+        nickname="Nickname mới cho user."
     )
     async def nick(self, context: Context, user: discord.User, *, nickname: str = None) -> None:
         member = context.guild.get_member(user.id) or await context.guild.fetch_member(user.id)
@@ -75,7 +74,7 @@ class Moderation(commands.Cog, name="moderation"):
     @commands.bot_has_permissions(ban_members=True)
     @app_commands.describe(
         user="User bị ban.",
-        reason="Lý do ban.",
+        reason="Lý do ban."
     )
     async def ban(self, context: Context, user: discord.User, *, reason: str = "Không xác định") -> None:
         member = context.guild.get_member(user.id) or await context.guild.fetch_member(user.id)
@@ -94,11 +93,10 @@ class Moderation(commands.Cog, name="moderation"):
                 await context.send(embed=embed)
                 try:
                     await member.send(
-                        f"Bạn đã bị chặn bởi **{context.author}** từ server **{
-                            context.guild.name}**!\nReason: {reason}"
+                        f"Bạn đã bị chặn bởi **{context.author}** từ server **{context.guild.name}**!\nReason: {reason}"
                     )
                 except:
-                    # Couldn't send a message in the private messages of the user
+                    # Couldn't send a message for the user
                     pass
                 await member.ban(reason=reason)
         except:
@@ -111,7 +109,7 @@ class Moderation(commands.Cog, name="moderation"):
 
     @commands.hybrid_command(
         name="clear",
-        description="Xoá một số lượng tin nhắn.",
+        description="Xoá một số lượng tin nhắn."
     )
     @commands.has_guild_permissions(manage_messages=True)
     @commands.bot_has_permissions(manage_messages=True)
@@ -120,8 +118,7 @@ class Moderation(commands.Cog, name="moderation"):
         await context.send("Đang xoá tin nhắn...") 
         purged_messages = await context.channel.purge(limit=amount + 2)
         embed = discord.Embed(
-            description=f"**{context.author}** đã xoá **{
-                len(purged_messages)-1}** tin nhắn!",
+            description=f"**{context.author}** đã xoá **{len(purged_messages)-1}** tin nhắn!",
             color=0xBEBEFE,
         )
         await context.channel.send(embed=embed)
