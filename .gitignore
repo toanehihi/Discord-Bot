@@ -6,6 +6,3 @@ __pycache__/
 
 # Virtual environment
 .venv/
-
-# config
-config.json
