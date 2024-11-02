@@ -1,4 +1,4 @@
-import random, asyncio, discord, json
+import random, asyncio, discord, json, os
 
 from ast import alias
 from discord.ext import commands
@@ -23,6 +23,11 @@ class MusicPlayer:
         
         self.ytdl = YoutubeDL(self.YDL_OPTIONS)
         self.cache = RedisCache()
+        self.ffmpeg_directory = None
+        if  os.name == 'nt':  #win
+            self.ffmpeg_directory = 'lib/ffmpeg/bin/ffmpeg.exe'
+        else:  #linux | mac
+            self.ffmpeg_directory = 'ffmpeg'
         
     def search_song(self,item):
         if item.startswith('https://'):
@@ -40,7 +45,7 @@ class MusicPlayer:
             #check if song is in cache
             if cache_song:= self.cache.get_song_url(url):
                 song = cache_song
-                self.voiceChannel.play(discord.FFmpegPCMAudio(song,executable="lib\\ffmpeg\\bin\\ffmpeg.exe",**self.FFMPEG_OPTIONS),after = lambda e: asyncio.run_coroutine_threadsafe(self.play_next(),self.bot.loop))
+                self.voiceChannel.play(discord.FFmpegPCMAudio(song,executable=self.ffmpeg_directory,**self.FFMPEG_OPTIONS),after = lambda e: asyncio.run_coroutine_threadsafe(self.play_next(),self.bot.loop))
                 return
             
             loop = asyncio.get_event_loop()
@@ -48,7 +53,7 @@ class MusicPlayer:
             #cache it
             self.cache.set_song_url(url,data['url'])
             
-            self.voiceChannel.play(discord.FFmpegPCMAudio(data['url'],executable="lib\\ffmpeg\\bin\\ffmpeg.exe",**self.FFMPEG_OPTIONS),after = lambda e: asyncio.run_coroutine_threadsafe(self.play_next(),self.bot.loop))
+            self.voiceChannel.play(discord.FFmpegPCMAudio(data['url'],executable=self.ffmpeg_directory,**self.FFMPEG_OPTIONS),after = lambda e: asyncio.run_coroutine_threadsafe(self.play_next(),self.bot.loop))
             
         else:
             self.isPlaying = False
