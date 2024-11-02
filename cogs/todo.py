@@ -217,7 +217,7 @@ class TodoCog(commands.Cog,name="Todo"):
       task_count = 0
       for task_info in util.sort_tasks(tasks):
          value = task_info['data']
-         if value['completed']:
+         if value['completed'] and value.get('overdue', True):
             continue
          
          if value['deadline']:
