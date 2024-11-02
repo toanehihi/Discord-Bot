@@ -1,4 +1,4 @@
-import firebase_admin, asyncio
+import firebase_admin, json, os, sys
 from firebase_admin import credentials, firestore
 from datetime import datetime, timedelta, date
 from discord.ext import commands
@@ -8,8 +8,26 @@ import util.util_todo as util
 class TodoCog(commands.Cog,name="Todo"):
    def __init__(self, bot):
       self.bot = bot
+
+      file_path = 'config/todo-app-config.json'
+      with open(file_path, 'r') as file:
+         data = json.load(file)
+
+      print(data["test"])
+
       # Initialize Firebase
-      cred = credentials.Certificate("config/todo-app-key.json")
+      cred = credentials.Certificate({
+         "type": data["type"],
+         "project_id": data["project_id"],
+         "private_key_id": data["private_key_id"],
+         "private_key": data["private_key"],
+         "client_email": data["client_email"],
+         "client_id": data["client_id"],
+         "auth_uri": data["auth_uri"],
+         "token_uri": data["token_uri"],
+         "auth_provider_x509_cert_url": data["auth_provider_x509_cert_url"],
+         "client_x509_cert_url": data["client_x509_cert_url"]
+})
       if not firebase_admin._apps:
          firebase_admin.initialize_app(cred)
       self.db = firestore.client()

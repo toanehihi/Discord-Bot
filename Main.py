@@ -10,7 +10,7 @@ else:
     with open(f"{os.path.realpath(os.path.dirname(__file__))}/config/config.json") as file:
         config = json.load(file)
 
-"""	
+"""	    
 All intents:
 intents.bans = True
 intents.dm_messages = True
