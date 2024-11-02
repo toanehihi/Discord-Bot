@@ -174,7 +174,7 @@ class Utility(commands.Cog, name="utility"):
             embed = wiki_embed(json_response)
             await context.send(embed=embed)
         else:
-            await context.send(f"Lỗi khi tìm kiếm thông tin.")
+            await context.send("Lỗi khi tìm kiếm thông tin.")
 
 # And then we finally add the cog to the bot
 async def setup(bot) -> None:

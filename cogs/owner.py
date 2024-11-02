@@ -122,14 +122,12 @@ class Owner(commands.Cog, name="owner"):
     @app_commands.describe(message="Thông điệp mà bạn muốn bot nói.")
     @commands.is_owner()
     async def say(self, context: Context, *, message: str) -> None:
- 
         await context.send(message)
 
     @commands.hybrid_command(name="embed", description="Bot sẽ nói những gì bạn muốn, nhưng ở trong một embed.")
     @app_commands.describe(message="Thông điệp mà bạn muốn bot nói.")
     @commands.is_owner()
     async def embed(self, context: Context, *, message: str) -> None:
-
         embed = discord.Embed(description=message, color=0xBEBEFE)
         await context.send(embed=embed)
 
