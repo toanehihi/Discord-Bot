@@ -1,9 +1,13 @@
-import firebase_admin, json, os, sys
+import firebase_admin
 from firebase_admin import credentials, firestore
 from datetime import datetime, timedelta, date
 from discord.ext import commands
 
 import util.util_todo as util
+
+# Setup function to add the TodoCog to the bot.
+async def setup(bot)-> None:
+   await bot.add_cog(TodoCog(bot))
 
 class TodoCog(commands.Cog,name="Todo"):
    def __init__(self, bot):
@@ -17,6 +21,7 @@ class TodoCog(commands.Cog,name="Todo"):
 
    def get_user_ref(self, ctx):
       # Get a reference to a user's tasks collection in Firebase.
+      # users -> user_id -> tasks -> ...
       user_id = str(ctx.author.id)
       return (
          self.db.collection('users')
@@ -28,22 +33,34 @@ class TodoCog(commands.Cog,name="Todo"):
       # Retrieve all tasks for a user from Firebase.
       tasks_ref = self.get_user_ref(ctx)
       docs = tasks_ref.stream()
-      tasks = {}
+      tasks = []
       for doc in docs:
-         tasks[doc.id] = doc.to_dict()
+         task = {}
+         task[doc.id] = doc.to_dict()
+         tasks.append(task)
       return tasks_ref, tasks
+
+   @commands.command(name='test',description="")
+   async def test(self, ctx):
+      task_ref, tasks = await self.get_user_tasks(ctx)
+      rs = util.get_tasks_by_priority(tasks)
+      await ctx.send(f'{rs}')
 
    @commands.command(name='add',description="Thêm một task mới")
    async def add_task(self, ctx, *, task_and_deadline: str):
+      # Get name of the user in discord
       user_name = ctx.author.display_name
+
+      # Get the user's tasks reference
       tasks_ref = self.get_user_ref(ctx)
 
       # Split the task and deadline from the input
+      # Example: !add Finish homework 11/11/2024
       parts = task_and_deadline.rsplit(' ', 1)
-      task = parts[0]
-      deadline = parts[1]
+      task = parts[0]  # Finish homework
+      deadline = parts[1] # 11/11/2024
       
-      # Validate the deadline date format
+      # Validate the deadline date format (dd/mm/yyyy)
       is_valid, result = util.is_valid_date(deadline)
       if not is_valid:
          await ctx.send(result)
@@ -54,237 +71,235 @@ class TodoCog(commands.Cog,name="Todo"):
          "task": task,
          "completed": False,
          "overdue": False,
-         "deadline": result.isoformat() if result else None,
+         "deadline": result.isoformat(),
          "created_at": datetime.now().isoformat()
       }
       
+      # add new task to the user's tasks collection
       tasks_ref.add(new_task)
       await ctx.send(f'[{user_name}] Đã thêm công việc: {task}')
 
-   @commands.command(name='list',description="Liệt kê tất cả các task")
+   @commands.command(name='list', description="Liệt kê tất cả các task")
    async def list_tasks(self, ctx):
+      await self.update_overdue_tasks(ctx)
+
+      # Get name of the user in discord
       user_name = ctx.author.display_name
+
+      # Get the user's tasks
       tasks_ref, tasks = await self.get_user_tasks(ctx)
+
+      # Check tasks is empty then exit
       if not tasks:
-         await ctx.send(f'[{user_name}] Danh sách công việc của bạn trống.')
+         await ctx.send(f'[{user_name}] Bạn không có công việc nào.')
          return
 
-      # Update overdue status for all tasks
-      await self.check_overdue_tasks(tasks_ref, tasks)
+      # Filter tasks by status
+      tasks_are_incomplete = util.filter_task_by_condition(tasks, util.is_incomplete)
+      tasks_are_completed = util.filter_task_by_condition(tasks, util.is_completed)
+      tasks_are_overdue = util.filter_task_by_condition(tasks, util.is_overdue)
 
-      # Refresh tasks after updating overdue status
-      tasks_ref, tasks = await self.get_user_tasks(ctx)
-      
-      # Sort tasks
-      sorted_tasks = util.sort_tasks(tasks)
-      
-      # Format each task with status and deadline information
-      task_list = []
-      for i, task_info in enumerate(sorted_tasks, 1):
-         value = task_info['data']
-         # Determine task status icon
-         if value['completed']:
-            status = '✓'
-         elif value.get('overdue', False):
-            status = 'O'
-         else:
-            status = '✗'
-            
-         # Format deadline information
-         deadline = ""
-         if value['deadline']:
-            deadline_date = datetime.fromisoformat(value['deadline']).date()
-            deadline = f"Exp: {deadline_date.strftime('%d/%m/%Y')}"
-            # Add remaining days information for incomplete tasks
-            if not value['completed'] and not value.get('overdue', False):
-               days_left = task_info['days_until_deadline']
-               if days_left == 0:
-                  deadline += " (Hôm nay)"
-               elif days_left == 1:
-                  deadline += " (Ngày mai)"
-               else:
-                  deadline += f" (Còn {days_left} ngày)"
+      result = []
+      count = 0
+      # Format tasks based on their status
+      if tasks_are_incomplete:
+         util.format_tasks(tasks_are_incomplete, "[✗]", count, result)
+      if tasks_are_completed:
+         util.format_tasks(tasks_are_completed, "[✓]", count, result)
+      if tasks_are_overdue:
+         util.format_tasks(tasks_are_overdue, "[O]", count, result)
 
-         task_list.append(f"{i}. [{status}] - {value['task']} - {deadline}".strip())
-      
-      formatted_list = '\n'.join(task_list)
-      await ctx.send(f'[{user_name}] Danh sách công việc của bạn:\n{formatted_list}')
+      # Display the tasks in a formatted message
+      tasks_formatted = '\n'.join(result)
+      await ctx.send(f'[{user_name}] Danh sách công việc:\n{tasks_formatted}')
 
-   @commands.command(name='edit',description="Sửa một task")
-   async def edit_task(self, ctx, index: int, *, new_task_description: str):
+   @commands.command(name='list_w', description="Liệt kê tất cả các task cần hoàn thành trong tuần")
+   async def list_task_this_weak(self, ctx):
+      await self.update_overdue_tasks(ctx)
+
+      # Get name of the user in discord
       user_name = ctx.author.display_name
+
+      # Get the user's tasks
       tasks_ref, tasks = await self.get_user_tasks(ctx)
+      
+      # Filter tasks in this week
+      tasks_this_week = util.filter_task_by_condition(tasks, util.is_task_in_this_week)
+      if not tasks_this_week:
+         await ctx.send(f'[{user_name}] Bạn không có công việc nào trong tuần này.')
+         return # Exit if no tasks are in this week
+      
+      # Format the tasks
+      result = []
+      count = 0
+      util.format_tasks(tasks_this_week, "[✗]", count, result)
 
-      # Check if the task index is valid
-      if tasks and 0 < index <= len(tasks):
-         task_id = list(tasks.keys())[index-1]
+      # Display the tasks in a formatted message
+      tasks_formatted = '\n'.join(result)
+      await ctx.send(f'[{user_name}] Danh sách công việc cần làm trong tuần này:\n{tasks_formatted}')
 
-         # Save the old task description for the response message
-         old_task = tasks[task_id]['task']
+   @commands.command(name='list_nw', description="Liệt kê tất cả các task cần hoàn thành trong tuần sau")
+   async def list_task_next_weak(self, ctx):
+      await self.update_overdue_tasks(ctx)
 
-         tasks_ref.document(task_id).update({'task': new_task_description})
-         await ctx.send(f'[{user_name}] Đã sửa công việc:\nCũ: {old_task}\nMới: {new_task_description}')
-      else:
-         await ctx.send(f'[{user_name}] Không tìm thấy công việc với số thứ tự này.')
-
-   @commands.command(name='complete',description="Đánh dấu một task là đã hoàn thành")
-   async def complete_task(self, ctx, index: int, status: int):
+      # Get name of the user in discord
       user_name = ctx.author.display_name
+
+      # Get the user's tasks
+      tasks_ref, tasks = await self.get_user_tasks(ctx)
+      
+      # Filter tasks in next week
+      tasks_next_week = util.filter_task_by_condition(tasks, util.is_task_in_next_week)
+      if not tasks_next_week:
+         await ctx.send(f'[{user_name}] Bạn không có công việc nào trong tuần sau.')
+         return # Exit if no tasks are in next week
+
+      # Format the tasks
+      result = []
+      count = 0
+      util.format_tasks(tasks_next_week, "[✗]", count, result)
+
+      # Display the tasks in a formatted message
+      tasks_formatted = '\n'.join(result)
+      await ctx.send(f'[{user_name}] Danh sách công việc cần làm trong tuần sau:\n{tasks_formatted}')
+
+   @commands.command(name='complete', description="Đánh dấu một task là đã hoàn thành hoặc chưa hoàn thành")
+   async def complete_task(self, ctx, task_number: int, task_status: int):
+      # Get user's name in discord
+      user_name = ctx.author.display_name
+
+      # Get the user's tasks from Firebase
       tasks_ref, tasks = await self.get_user_tasks(ctx)
 
-      # Check if the status is valid
-      if not (status == 0 or status == 1):
-         await ctx.send(f'[{user_name}] Trạng thái không hợp lệ. Vui lòng sử dụng 0 (chưa hoàn thành) hoặc 1 (đã hoàn thành).')
+      # Check if the task number is valid
+      if task_number < 1 or task_number > len(tasks):
+         await ctx.send(f'[{user_name}] Số thứ tự công việc không hợp lệ.')
+         return
+
+      # Check if the task status is valid
+      # 0: Incomplete, 1: Completed
+      if task_status not in [0, 1]:
+         await ctx.send(f'[{user_name}] Trạng thái công việc không hợp lệ.')
+      
+      # Get the task ID and info
+      task_id, task_info = util.get_task_info_by_task_number(tasks, task_number)
+
+      # If the task is overdue, it cannot be marked
+      if task_info['overdue']:
+         await ctx.send(f'[{user_name}] Công việc đã quá hạn không thể đánh dấu.')
+         return
+
+      # Update the task's status in Firebase
+      task_ref = self.get_user_ref(ctx)
+      doc_ref = (task_ref
+                     .document(task_id)
+                     .update({'completed': bool(task_status)})
+               )
+      await ctx.send(f'[{user_name}] Đã cập nhật trạng thái công việc.')
+
+   @commands.command(name='edit', description="Chỉnh sửa nội dung của task")
+   async def edit_task(self, ctx, task_number: int, *, new_task: str):
+      # Get user's name in discord
+      user_name = ctx.author.display_name
+
+      # Get the user's tasks from Firebase
+      tasks_ref, tasks = await self.get_user_tasks(ctx)
+
+      # Check if the task number is valid
+      if task_number < 1 or task_number > len(tasks):
+         await ctx.send(f'[{user_name}] Số thứ tự công việc không hợp lệ.')
          return
       
-      # Check if the task index is valid
-      if tasks and 0 < index <= len(tasks):
-         task_id = list(tasks.keys())[index-1]
+      # Get the task ID and info
+      task_id, task_info = util.get_task_info_by_task_number(tasks, task_number)
 
-         # Update the task status
-         updates = {
-            'completed': bool(status),
-            'overdue': False
+      # Update the task's description
+      doc = (tasks_ref
+                  .document(task_id)
+                  .update({'task': new_task})
+            )
+
+   @commands.command(name='deadline', description="Chỉnh sửa deadline của task")
+   async def edit_deadline(self, ctx, task_number: int, new_deadline: str):
+      # Get user's name in discord
+      user_name = ctx.author.display_name
+
+      # Get the user's tasks from Firebase
+      tasks_ref, tasks = await self.get_user_tasks(ctx)
+
+      # Check if the task number is valid
+      if task_number < 1 or task_number > len(tasks):
+         await ctx.send(f'[{user_name}] Số thứ tự công việc không hợp lệ.')
+         return
+      
+      # check if the new deadline is valid
+      is_valid, result = util.is_valid_date(new_deadline)
+      if not is_valid:
+         await ctx.send(result)
+         return
+
+      # Get the task ID and info
+      task_id, task_info = util.get_task_info_by_task_number(tasks, task_number)
+
+      updated_deadline = {
+         'deadline': result.isoformat(),
+      }
+      # If the task is overdue, update the overdue status
+      if task_info['overdue']:
+         updated_deadline = {
+            'overdue': False,
          }
-         tasks_ref.document(task_id).update(updates)
-         status_text = "hoàn thành" if status == 1 else "chưa hoàn thành"
-         await ctx.send(f'[{user_name}] Đã đánh dấu công việc {index} là {status_text}.')
-      else:
-         await ctx.send(f'[{user_name}] Không tìm thấy công việc với số thứ tự này.')
 
-   @commands.command(name='delete',description="Xóa một task")
-   async def delete_task(self, ctx, index: int):
+      # Update the task's deadline
+      doc = (tasks_ref
+                  .document(task_id)
+                  .update(updated_deadline)
+            )
+
+      await ctx.send(f'[{user_name}] Đã cập nhật deadline của công việc.')
+
+   @commands.command(name='delete', description="Xóa một task")
+   async def delete_task(self, ctx, task_number: int):
+      # Get user's name in discord
       user_name = ctx.author.display_name
+
+      # Get the user's tasks from Firebase
       tasks_ref, tasks = await self.get_user_tasks(ctx)
 
-      # Check if the task index is valid
-      if tasks and 0 < index <= len(tasks):
-         # Get selected task ID
-         task_id = list(tasks.keys())[index-1]
-
-         # Save the deleted task for the response message
-         deleted_task = tasks[task_id]
-
-         tasks_ref.document(task_id).delete()
-         await ctx.send(f'[{user_name}] Đã xóa công việc: {deleted_task["task"]}')
-      else:
-         await ctx.send(f'[{user_name}] Không tìm thấy công việc với số thứ tự này.')
-
-   @commands.command(name='deadline',description="Đặt hạn cho một task")
-   async def set_deadline(self, ctx, index: int, deadline: str):
-      user_name = ctx.author.display_name
-      tasks_ref, tasks = await self.get_user_tasks(ctx)
-
-      # Check if the task index is valid
-      if tasks and 0 < index <= len(tasks):
-         # Validate the new deadline
-         is_valid, result = util.is_valid_date(deadline)
-         if not is_valid:
-            await ctx.send(result)
-            return
-         
-         # get selected task ID
-         task_id = list(tasks.keys())[index-1]
-         # Update the task deadline
-         tasks_ref.document(task_id).update({
-            'deadline': result.isoformat(),
-            'overdue': False
-         })
-
-         await ctx.send(f'[{user_name}] Đã đặt hạn cho công việc {index}: {deadline}')
-      else:
-         await ctx.send(f'[{user_name}] Không tìm thấy công việc với số thứ tự này.')
-
-   @commands.command(name='list_w',description="Liệt kê các task trong tuần này")
-   async def list_this_week_tasks(self, ctx):
-      user_name = ctx.author.display_name
-      tasks_ref, tasks = await self.get_user_tasks(ctx)
-      # Check tasks list is empty
-      if not tasks:
-         await ctx.send(f'[{user_name}] Danh sách công việc của bạn trống.')
+      # Check if the task number is valid
+      if task_number < 1 or task_number > len(tasks):
+         await ctx.send(f'[{user_name}] Số thứ tự công việc không hợp lệ.')
          return
-
-      # Update overdue status before listing
-      await self.check_overdue_tasks(tasks_ref, tasks)
-      tasks_ref, tasks = await self.get_user_tasks(ctx)
-
-      # Calculate this week's date range
-      today = date.today()
-      start_of_week = today - timedelta(days=today.weekday())
-      end_of_week = start_of_week + timedelta(days=6)
       
-      # Filter and format tasks for this week
-      task_list = []
-      task_count = 0
-      for task_info in util.sort_tasks(tasks):
-         value = task_info['data']
-         if value['completed'] and value.get('overdue', True):
-            continue
-         
-         if value['deadline']:
-            deadline_date = datetime.fromisoformat(value['deadline']).date()
-            if start_of_week <= deadline_date <= end_of_week:
-               deadline = f"Exp: {deadline_date.strftime('%d/%m/%Y')}"
-               status = 'O' if value.get('overdue', False) else '✗'
-               task_count += 1
-               task_list.append(f"{task_count}. [{status}] - {value['task']} - {deadline}")
+      # Get the task ID and info
+      task_id, task_info = util.get_task_info_by_task_number(tasks, task_number)
 
-      if task_list:
-         formatted_list = '\n'.join(task_list)
-         await ctx.send(f'[{user_name}] Danh sách công việc chưa hoàn thành trong tuần này:\n{formatted_list}')
-      else:
-         await ctx.send(f'[{user_name}] Không có công việc chưa hoàn thành trong tuần này.')
+      # Delete the task from Firebase
+      doc = (tasks_ref
+                  .document(task_id)
+                  .delete()
+            )
 
-   @commands.command(name='list_nw',description="Liệt kê các task trong tuần tới")
-   async def list_next_week_tasks(self, ctx):
-      user_name = ctx.author.display_name
-      tasks_ref, tasks = await self.get_user_tasks(ctx)
-      if not tasks:
-         await ctx.send(f'[{user_name}] Danh sách công việc của bạn trống.')
-         return
+      await ctx.send(f'[{user_name}] Đã xóa công việc.')
 
-      await self.check_overdue_tasks(tasks_ref, tasks)
-      tasks_ref, tasks = await self.get_user_tasks(ctx)
-
-      # Calculate next week's date range
-      today = date.today()
-      start_of_next_week = today + timedelta(days=(7 - today.weekday()))
-      end_of_next_week = start_of_next_week + timedelta(days=6)
-      
-      # Filter and format tasks for next week
-      task_list = []
-      task_count = 0
-      for task_info in util.sort_tasks(tasks):
-         value = task_info['data']
-         if value['completed']:
-            continue
-         
-         if value['deadline']:
-            deadline_date = datetime.fromisoformat(value['deadline']).date()
-            if start_of_next_week <= deadline_date <= end_of_next_week:
-               deadline = f"Exp: {deadline_date.strftime('%d/%m/%Y')}"
-               status = 'O' if value.get('overdue', False) else '✗'
-               task_count += 1
-               task_list.append(f"{task_count}. [{status}] - {value['task']} - {deadline}")
-
-      if task_list:
-         formatted_list = '\n'.join(task_list)
-         legend = "\nChú thích:\n[✗] - Chưa hoàn thành\n[O] - Quá hạn"
-         await ctx.send(f'[{user_name}] Danh sách công việc chưa hoàn thành trong tuần tới:\n{formatted_list}{legend}')
-      else:
-         await ctx.send(f'[{user_name}] Không có công việc chưa hoàn thành trong tuần tới.')
-
-   @commands.command(name='clear_todo',description="Xóa tất cả các task")
+   @commands.command(name='clear_todo', description="Xóa tất cả các task")
    async def clear_tasks(self, ctx):
+      # Get user's name in discord
       user_name = ctx.author.display_name
-      
-      # Get a reference to the user's tasks collection
-      tasks_ref = self.get_user_ref(ctx)
-      tasks = tasks_ref.stream()
 
-      # Delete all tasks
+      # Get the user's tasks from Firebase
+      tasks_ref, tasks = await self.get_user_tasks(ctx)
+
+      # Check if the user has any tasks
+      if not tasks:
+         await ctx.send(f'[{user_name}] Bạn không có công việc nào để xoá.')
+         return
+
+      # Delete all tasks from Firebase
       for task in tasks:
-         task.reference.delete()
+         for task_id, task_info in task.items():
+            doc = tasks_ref.document(task_id).delete()
+
       await ctx.send(f'[{user_name}] Đã xóa tất cả công việc.')
 
    @commands.command(name='todo',description="Hiển thị danh sách các lệnh")
@@ -296,23 +311,26 @@ class TodoCog(commands.Cog,name="Todo"):
       except Exception as e:
          await ctx.send(f"Có lỗi xảy ra: {str(e)}")
 
-   async def check_overdue_tasks(self, tasks_ref, tasks):
+   async def update_overdue_tasks(self, ctx):
+      # Get the user's tasks from Firebase
+      tasks_ref, tasks = await self.get_user_tasks(ctx)
+
+      # If tasks is empty, exit
       if not tasks:
          return
 
-      current_date = date.today()
-      batch = self.db.batch()
+      # Filter tasks by incomplete and not overdue
+      update_task_overdue = util.filter_task_by_condition(tasks, util.check_task_deadline_and_overdue)
+      if not update_task_overdue:
+         return  # Exit if no tasks are overdue
 
-      # Check each task's deadline and update overdue status if necessary
-      for doc_id, value in tasks.items():
-         if not value['completed'] and value['deadline']:
-            deadline_date = datetime.fromisoformat(value['deadline']).date()
-            if deadline_date < current_date and not value.get('overdue', False):
-               doc_ref = tasks_ref.document(doc_id)
-               batch.update(doc_ref, {'overdue': True})
+      for task in update_task_overdue:
+         for task_id, task_info in task.items(): # Unpack the task dictionary
+            # Update the task's overdue status
+            tasks_ref.document(task_id).update({'overdue': True})
 
-      batch.commit()
 
-async def setup(bot)-> None:
-   # Setup function to add the TodoCog to the bot.
-   await bot.add_cog(TodoCog(bot))
+
+
+
+
