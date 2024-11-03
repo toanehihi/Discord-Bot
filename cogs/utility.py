@@ -110,7 +110,7 @@ class Utility(commands.Cog, name="utility"):
         await context.send(embed=embed)
 
     @commands.hybrid_command(name="translate", description="Dịch một đoạn văn bản từ tiếng Anh sang tiếng Việt")
-    @app_commands.describe(text= "Văn bản cần dịch")
+    @app_commands.describe(text = "Văn bản cần dịch")
     async def translate(self, context: Context, *,  text: str) -> None:
 
         url = "https://google-translator9.p.rapidapi.com/v2"
