@@ -57,7 +57,7 @@ class Moderation(commands.Cog, name="moderation"):
         try:
             if member.guild_permissions.administrator:
                 embed = discord.Embed(
-                    description="User có quyền chặn.", color=0xE02B2B
+                    description="User không có quyền chặn.", color=0xE02B2B
                 )
                 await context.send(embed=embed)
             else:
