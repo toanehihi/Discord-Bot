@@ -27,4 +27,4 @@ Status:
 - Overdue [O]
 
 ⚠️Warning:
--  When deleting or marking a task as completed, use the index shown by the "!list" command
+-  When delete or mark or edit a task as completed, use the index shown by the "!list" command

@@ -218,6 +218,8 @@ class TodoCog(commands.Cog,name="Todo"):
                   .document(task_id)
                   .update({'task': new_task})
             )
+      
+      await ctx.send(f'[{user_name}] Đã cập nhật nội dung công việc.')
 
    @commands.command(name='deadline', description="Chỉnh sửa deadline của task")
    async def edit_deadline(self, ctx, task_number: int, new_deadline: str):

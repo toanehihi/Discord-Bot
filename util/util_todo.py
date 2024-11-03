@@ -1,6 +1,5 @@
 from datetime import date, datetime, timedelta
 
-
 # Check the date is valid or not
 # and the date is not in the past.
 def is_valid_date(date_str):
@@ -49,8 +48,8 @@ def format_deadline(date_str, is_incomplete=False):
    Filter tasks by a specific condition.
 '''
 def filter_task_by_condition(tasks, condition_func):
-   filtered_data = [task for task in tasks if condition_func(list(task.values())[0])]
-   return filtered_data
+      filtered_data = [task for task in tasks if condition_func(list(task.values())[0])]
+      return filtered_data
 # Define the condition functions
 def is_completed(task):
    return task['completed'] == True
@@ -69,14 +68,21 @@ def is_task_in_this_week(task):
    deadline_date = datetime.fromisoformat(task['deadline']).date() # get the deadline date
    start_of_week = today - timedelta(days=today.weekday()) # get the start of the week
    end_of_week = start_of_week + timedelta(days=6)  # get the end of the week
-   return start_of_week <= deadline_date <= end_of_week and task['completed'] == False and task['overdue'] == False # check the deadline date is in this week or not
+   return (start_of_week <= deadline_date <= end_of_week 
+         and task['completed'] == False 
+         and task['overdue'] == False) # check the deadline date is in this week or not
 
 def is_task_in_next_week(task):
    today = date.today() # get the current date
-   deadline_date = datetime.fromisoformat(task['deadline']).date() # get the deadline date
-   start_of_next_week = today + timedelta(weeks=1) - timedelta(days=today.weekday()) # get the start of the next week
+   # get the deadline date
+   deadline_date = datetime.fromisoformat(task['deadline']).date() 
+   # get the start of the next week
+   start_of_next_week = today + timedelta(weeks=1) - timedelta(days=today.weekday()) 
    end_of_next_week = start_of_next_week + timedelta(days=6)  # get the end of the next week
-   return start_of_next_week <= deadline_date <= end_of_next_week and task['completed'] == False and task['overdue'] == False # check the deadline date is in next week or not
+   # check the deadline date is in next week or not
+   return (start_of_next_week <= deadline_date <= end_of_next_week 
+            and task['completed'] == False 
+            and task['overdue'] == False) 
 
 '''
    Get tasks by priority
