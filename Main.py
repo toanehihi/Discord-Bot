@@ -32,25 +32,6 @@ class LoggingFormatter(logging.Formatter):
         formatter = logging.Formatter(format, "%Y-%m-%d %H:%M:%S", style="{")
         return formatter.format(record)
 
-#Create a logger that records the entire progress of the bot
-logger = logging.getLogger("discord_bot")
-logger.setLevel(logging.INFO) #DEBUG, INFO, WARNING, ERROR, CRITICAL
-
-# Console handler
-console_handler = logging.StreamHandler()
-console_handler.setFormatter(LoggingFormatter())
-# File handler
-file_handler = logging.FileHandler(filename="discord.log", encoding="utf-8", mode="w")
-
-file_handler_formatter = logging.Formatter(
-    "[{asctime}] [{levelname:<8}] {name}: {message}", "%Y-%m-%d %H:%M:%S", style="{"
-)
-file_handler.setFormatter(file_handler_formatter)
-
-# Add the handlers
-logger.addHandler(console_handler)
-logger.addHandler(file_handler)
-
 class DiscordBot(commands.Bot):
     def __init__(self) -> None:
         super().__init__(
@@ -195,6 +176,24 @@ if __name__ == "__main__":
     intents.presences = True
     """
     intents = discord.Intents.all()
+    #Create a logger that records the entire progress of the bot
+    logger = logging.getLogger("discord_bot")
+    logger.setLevel(logging.INFO) #DEBUG, INFO, WARNING, ERROR, CRITICAL
+
+    # Console handler
+    console_handler = logging.StreamHandler()
+    console_handler.setFormatter(LoggingFormatter())
+    # File handler
+    file_handler = logging.FileHandler(filename="discord.log", encoding="utf-8", mode="w")
+
+    file_handler_formatter = logging.Formatter(
+        "[{asctime}] [{levelname:<8}] {name}: {message}", "%Y-%m-%d %H:%M:%S", style="{"
+    )
+    file_handler.setFormatter(file_handler_formatter)
+
+    # Add the handlers
+    logger.addHandler(console_handler)
+    logger.addHandler(file_handler)
     
     bot = DiscordBot()
     bot.run(config["TOKEN"])
