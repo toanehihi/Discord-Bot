@@ -24,11 +24,11 @@ class Music(commands.Cog,name="Music"):
         return self.musicPlayers[guild_id]
     @commands.command(name="play", description="Phát nhạc từ YouTube")
     async def play(self, ctx, *args):
+        player = self.get_music_player(ctx)
         if ctx.author.voice is None:
             await ctx.send("Bạn phải vào voice channel trước")
             return
         query = " ".join(args)
-        player = self.get_music_player(ctx)
         await player.connect_to_voice_channel(ctx)
         song = player.search_song(query)
         await player.play_song(ctx,song)
