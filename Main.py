@@ -2,42 +2,6 @@ import json, logging, os, platform, random, sys ,discord
 from discord.ext import commands, tasks
 from discord.ext.commands import Context
 
-
-#Check config file + load it
-if not os.path.isfile(f"{os.path.realpath(os.path.dirname(__file__))}/config/config.json"):
-    sys.exit("'config.json' not found! Please add it and try again.")
-else:
-    with open(f"{os.path.realpath(os.path.dirname(__file__))}/config/config.json") as file:
-        config = json.load(file)
-
-"""	    
-All intents:
-intents.bans = True
-intents.dm_messages = True
-intents.dm_reactions = True
-intents.dm_typing = True
-intents.emojis = True
-intents.emojis_and_stickers = True
-intents.guild_messages = True
-intents.guild_reactions = True
-intents.guild_scheduled_events = True
-intents.guild_typing = True
-intents.guilds = True
-intents.integrations = True
-intents.invites = True
-intents.messages = True # `message_content` is required to get the content of the messages
-intents.reactions = True
-intents.typing = True
-intents.voice_states = True
-intents.webhooks = True
-intents.members = True
-intents.message_content = True
-intents.presences = True
-"""
-
-intents = discord.Intents.all()
-
-
 #Formatting Discord Log Messages
 class LoggingFormatter(logging.Formatter):
     # Colors
@@ -50,7 +14,6 @@ class LoggingFormatter(logging.Formatter):
     # Styles
     reset = "\x1b[0m"
     bold = "\x1b[1m"
-
     COLORS = {
         logging.DEBUG: gray + bold,
         logging.INFO: blue + bold,
@@ -78,6 +41,7 @@ console_handler = logging.StreamHandler()
 console_handler.setFormatter(LoggingFormatter())
 # File handler
 file_handler = logging.FileHandler(filename="discord.log", encoding="utf-8", mode="w")
+
 file_handler_formatter = logging.Formatter(
     "[{asctime}] [{levelname:<8}] {name}: {message}", "%Y-%m-%d %H:%M:%S", style="{"
 )
@@ -90,7 +54,7 @@ logger.addHandler(file_handler)
 class DiscordBot(commands.Bot):
     def __init__(self) -> None:
         super().__init__(
-            command_prefix=commands.when_mentioned_or(config["prefix"]),
+            command_prefix=commands.when_mentioned_or(config["prefix"]), 
             intents=intents,
             help_command=None,
         )
@@ -129,20 +93,17 @@ class DiscordBot(commands.Bot):
         self.logger.info("-------------------")
         await self.load_cogs()
         self.status_task.start()
-        
+    
 
-    async def on_message(self, message: discord.Message) -> None:
-        
+    async def on_message(self, message: discord.Message) -> None: 
         if message.author == self.user or message.author.bot:
             return
-        
         await self.process_commands(message)
 
     async def on_command_completion(self, context: Context) -> None:
         full_command_name = context.command.qualified_name
         split = full_command_name.split(" ")
         executed_command = str(split[0])
-        
         if context.guild is not None:
             self.logger.info(
                 f"Executed {executed_command} command in {context.guild.name} (ID: {context.guild.id}) by {context.author} (ID: {context.author.id})"
@@ -190,7 +151,7 @@ class DiscordBot(commands.Bot):
                 color=0xE02B2B,
             )
             await context.send(embed=embed)
-        elif isinstance(error, commands.MissingRequiredArgument):
+        elif isinstance(error, commands.MissingRequiredArgument): #clear 10
             embed = discord.Embed(
                 title="Error!",
                 description=str(error).capitalize(),
@@ -202,5 +163,38 @@ class DiscordBot(commands.Bot):
 
 
 if __name__ == "__main__":
+        #Check config file + load it
+    if not os.path.isfile(f"{os.path.realpath(os.path.dirname(__file__))}/config/config.json"):
+        sys.exit("'config.json' not found! Please add it and try again.")
+    else:
+        with open(f"{os.path.realpath(os.path.dirname(__file__))}/config/config.json") as file:
+            config = json.load(file)
+            
+    """	    
+    All intents:
+    intents.bans = True
+    intents.dm_messages = True
+    intents.dm_reactions = True
+    intents.dm_typing = True
+    intents.emojis = True
+    intents.emojis_and_stickers = True
+    intents.guild_messages = True
+    intents.guild_reactions = True
+    intents.guild_scheduled_events = True
+    intents.guild_typing = True
+    intents.guilds = True
+    intents.integrations = True
+    intents.invites = True
+    intents.messages = True # `message_content` is required to get the content of the messages
+    intents.reactions = True
+    intents.typing = True
+    intents.voice_states = True
+    intents.webhooks = True
+    intents.members = True
+    intents.message_content = True
+    intents.presences = True
+    """
+    intents = discord.Intents.all()
+    
     bot = DiscordBot()
     bot.run(config["TOKEN"])
