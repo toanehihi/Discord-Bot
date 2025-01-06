@@ -84,9 +84,6 @@ This project is a Discord bot designed to provide various features, including se
 - `!complete <index_of_task> <status>`: Mark a task as complete (`1`) or incomplete (`0`).
 - `!deadline <index_of_task> <exp_date>`: Update the deadline for a task.
 
-## Contribution
-Feel free to fork this repository and submit pull requests. Contributions are always welcome!
-
 ## License
 This project is licensed under the MIT License. See the `LICENSE` file for details.
 
