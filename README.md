@@ -31,12 +31,8 @@ This project is a Discord bot designed to provide various features, including se
    ```bash
    pip install -r requirements.txt
    ```
-4. Store your bot token in a `config.json` file in the root directory:
-   ```json
-   {
-       "DISCORD_TOKEN": "your_bot_token_here"
-   }
-   ```
+4. Create a `.env` file in the root directory to store your secret token:
+   TOKEN="YOUR TOKEN HERE"
 5. Run the bot:
    ```bash
    python main.py
