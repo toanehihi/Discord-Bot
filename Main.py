@@ -196,4 +196,4 @@ if __name__ == "__main__":
     logger.addHandler(file_handler)
     
     bot = DiscordBot()
-    bot.run(config["TOKEN"])
+    bot.run(os.getenv("TOKEN"))
