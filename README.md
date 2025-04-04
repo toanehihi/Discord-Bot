@@ -32,7 +32,9 @@ This project is a Discord bot designed to provide various features, including se
    pip install -r requirements.txt
    ```
 4. Create a `.env` file in the root directory to store your secret token:
+   ```
    TOKEN="YOUR TOKEN HERE"
+   ```
 5. Run the bot:
    ```bash
    python main.py
