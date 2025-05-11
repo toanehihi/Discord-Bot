@@ -4,6 +4,9 @@
 ## Introduction
 This project is a Discord bot designed to provide various features, including server moderation, music playback, utility tools, and task management. Built with `discord.py` and other libraries, this bot ensures smooth and user-friendly functionality.
 
+## Warning
+To use animals detection, bro need to download best.pt model and drop it into the root directory of the project...
+https://drive.google.com/file/d/1WxqzAlCaFGU_PxbMpZB5022d1rLgIiYr/view?usp=sharing
 ## Features
 - **Owner Commands**: Manage bot operations like syncing, loading, or reloading commands.
 - **Moderation Commands**: Keep your server in check with tools like kick, ban, and message clearing.
